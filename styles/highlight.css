@@ -382,3 +382,14 @@
 .lighton-disabled .lighton-indicator {
   display: none !important;
 }
+
+/* ===== Readability Fixes (Applied by content.js) ===== */
+.lighton-fix-text {
+  font-size: var(--lighton-fix-font-size, 18px) !important;
+  line-height: var(--lighton-fix-line-height, 1.6) !important;
+  letter-spacing: 0 !important;
+}
+
+.lighton-fix-contrast {
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.15) !important;
+}
