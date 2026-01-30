@@ -476,7 +476,7 @@
     }
 
     // 설명
-    elements.secessionNotes.textContent = data.notes || t.secessionSeeGuide;
+    elements.secessionNotes.textContent = t.secessionSeeGuide;
 
     // 액션 링크
     elements.secessionAction.href = data.url;
