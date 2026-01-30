@@ -396,7 +396,86 @@
       </div>
     </div>
 
-    <!-- Pattern 5: Ambiguous Button -->
+    <!-- Pattern 5: Visual Hierarchy Manipulation -->
+    <div class="section">
+      <h2>
+        🎯 잘못된 계층구조
+        <span class="tag tag-high">높음</span>
+      </h2>
+      <p class="desc">선택항목의 크기·모양·색깔 등에 현저한 차이를 두어 사업자에게 유리한 특정 항목으로 유도</p>
+
+      <div class="example">
+        <div class="example-label">예시 1: 요금제 선택</div>
+        <div style="display:flex;gap:16px;justify-content:center;align-items:stretch;">
+          <!-- Basic Plan -->
+          <div style="flex:1;border:1px solid #ddd;border-radius:8px;padding:20px;text-align:center;">
+            <h4 style="margin-bottom:12px;color:#666;">Basic</h4>
+            <p style="font-size:1.5rem;font-weight:600;margin-bottom:8px;">₩9,900</p>
+            <p style="font-size:0.8rem;color:#999;margin-bottom:16px;">월</p>
+            <ul style="list-style:none;text-align:left;margin-bottom:20px;font-size:0.85rem;color:#666;">
+              <li>✓ 기본 기능</li>
+              <li>✓ 1GB 저장공간</li>
+              <li>✓ 이메일 지원</li>
+            </ul>
+            <button class="btn" style="width:100%;background:#eee;color:#666;">선택</button>
+          </div>
+
+          <!-- Premium Plan (Highlighted) -->
+          <div class="recommended" style="flex:1;border:3px solid #4F46E5;border-radius:12px;padding:24px;text-align:center;transform:scale(1.08);box-shadow:0 8px 24px rgba(79,70,229,0.2);background:#FAFAFE;position:relative;">
+            <div style="position:absolute;top:-12px;right:20px;background:#FF6B6B;color:white;padding:4px 16px;border-radius:20px;font-size:0.75rem;font-weight:600;">추천</div>
+            <h4 style="margin-bottom:12px;color:#4F46E5;font-size:1.2rem;">Premium</h4>
+            <p style="font-size:2rem;font-weight:700;margin-bottom:8px;color:#4F46E5;">₩19,900</p>
+            <p style="font-size:0.8rem;color:#999;margin-bottom:16px;">월</p>
+            <ul style="list-style:none;text-align:left;margin-bottom:20px;font-size:0.9rem;color:#333;">
+              <li>✓ 모든 기능</li>
+              <li>✓ 100GB 저장공간</li>
+              <li>✓ 우선 지원</li>
+              <li>✓ 고급 분석</li>
+            </ul>
+            <button class="btn btn-primary btn-large" style="width:100%;">지금 시작</button>
+          </div>
+
+          <!-- Pro Plan -->
+          <div style="flex:1;border:1px solid #ddd;border-radius:8px;padding:20px;text-align:center;">
+            <h4 style="margin-bottom:12px;color:#666;">Pro</h4>
+            <p style="font-size:1.5rem;font-weight:600;margin-bottom:8px;">₩39,900</p>
+            <p style="font-size:0.8rem;color:#999;margin-bottom:16px;">월</p>
+            <ul style="list-style:none;text-align:left;margin-bottom:20px;font-size:0.85rem;color:#666;">
+              <li>✓ 무제한 기능</li>
+              <li>✓ 1TB 저장공간</li>
+              <li>✓ 전담 매니저</li>
+            </ul>
+            <button class="btn" style="width:100%;background:#eee;color:#666;">선택</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="example-label">예시 2: 영문 구독 옵션</div>
+        <div style="display:flex;gap:20px;justify-content:center;align-items:center;">
+          <div class="plan-card" style="border:1px solid #e0e0e0;border-radius:10px;padding:24px;text-align:center;width:200px;">
+            <h4 style="color:#888;margin-bottom:16px;">Starter</h4>
+            <p style="font-size:1.8rem;font-weight:600;margin-bottom:20px;">$9</p>
+            <button class="btn btn-secondary" style="width:100%;">Select</button>
+          </div>
+
+          <div class="plan-card featured" style="border:4px solid #FFB800;border-radius:16px;padding:32px;text-align:center;width:240px;background:linear-gradient(135deg,#FFF9E6,#FFFFFF);box-shadow:0 12px 32px rgba(255,184,0,0.25);position:relative;">
+            <div style="position:absolute;top:-15px;left:50%;transform:translateX(-50%);background:#FFB800;color:#1A1A2E;padding:6px 20px;border-radius:25px;font-size:0.8rem;font-weight:700;text-transform:uppercase;">BEST VALUE</div>
+            <h4 style="color:#FFB800;margin-bottom:16px;font-size:1.3rem;font-weight:700;">Professional</h4>
+            <p style="font-size:2.5rem;font-weight:700;margin-bottom:24px;color:#1A1A2E;">$29</p>
+            <button class="btn btn-primary btn-large" style="width:100%;background:#FFB800;color:#1A1A2E;">Get Started</button>
+          </div>
+
+          <div class="plan-card" style="border:1px solid #e0e0e0;border-radius:10px;padding:24px;text-align:center;width:200px;">
+            <h4 style="color:#888;margin-bottom:16px;">Enterprise</h4>
+            <p style="font-size:1.8rem;font-weight:600;margin-bottom:20px;">$99</p>
+            <button class="btn btn-secondary" style="width:100%;">Contact Us</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pattern 6: Ambiguous Button -->
     <div class="section">
       <h2>
         ❓ 모호한 버튼 문구
@@ -427,7 +506,7 @@
       </div>
     </div>
 
-    <!-- Pattern 6: Hidden Cost -->
+    <!-- Pattern 7: Hidden Cost -->
     <div class="section">
       <h2>
         💰 숨겨진 비용
@@ -455,7 +534,7 @@
       </div>
     </div>
 
-    <!-- Pattern 7: Small Print -->
+    <!-- Pattern 8: Small Print -->
     <div class="section">
       <h2>
         🔎 작은 글씨 약관
@@ -477,7 +556,7 @@
       </div>
     </div>
 
-    <!-- Pattern 8: Auto Add Cart -->
+    <!-- Pattern 9: Auto Add Cart -->
     <div class="section">
       <h2>
         🛒 자동 추가 옵션
@@ -512,7 +591,7 @@
       </div>
     </div>
 
-    <!-- Pattern 9: Free Trial Trap -->
+    <!-- Pattern 10: Free Trial Trap -->
     <div class="section">
       <h2>
         ⏰ 무료체험 자동전환

@@ -20,7 +20,14 @@ lighton/
 │   ├── content.js       # 메인 진입점 (페이지에 주입됨)
 │   ├── detector.js      # 다크패턴 탐지 로직
 │   ├── highlighter.js   # 탐지된 요소 하이라이팅
-│   └── patterns/        # 패턴 정의 파일들
+│   ├── patterns/        # 패턴 정의 (탐지만)
+│   │   ├── registry.js  # 패턴 레지스트리
+│   │   ├── interface.js # 인터페이스 조작 패턴
+│   │   └── sneaking.js  # 규정의 숨김 패턴
+│   └── actions/         # 액션 로직 (수정/교정)
+│       ├── registry.js  # 액션 설정 (단일 소스)
+│       ├── implementations.js  # 순수 액션 함수
+│       └── executor.js  # 액션 실행기 + undo
 ├── popup/               # 확장 프로그램 팝업 UI
 ├── styles/              # CSS 스타일
 └── _locales/            # 다국어 지원 (ko, en)
@@ -60,10 +67,29 @@ detector.js: DOM 스캔
     ↓
 highlighter.js: UI 표시
     ↓
+actions/executor.js: 자동 액션 적용
+    ↓
 popup.js: 결과 표시
 ```
 
-### 3. 하이라이팅 방식
+### 3. 액션 시스템
+
+액션 설정은 `scripts/actions/registry.js`에서 중앙 관리:
+
+```javascript
+// actions/registry.js 구조
+{
+  'asymmetric-buttons': {
+    available: ['equalize'],      // 사용 가능한 액션
+    autoApply: { enabled: true, action: 'equalize' },  // 자동 적용
+    readabilityFix: { enabled: true }  // 가독성 수정
+  }
+}
+```
+
+**주의**: 새 패턴 추가 시 `patterns/*.js`와 `actions/registry.js` 둘 다 등록 필요
+
+### 4. 하이라이팅 방식
 
 - **Subtle Dot**: 작은 점으로 탐지된 요소 표시
 - **Dashed Outline**: 점선 테두리

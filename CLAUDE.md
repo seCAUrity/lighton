@@ -19,10 +19,14 @@ lighton/
 │   ├── content.js          # Content Script (진입점)
 │   ├── detector.js         # 패턴 탐지 엔진
 │   ├── highlighter.js      # 하이라이팅 렌더러
-│   └── patterns/           # 패턴 정의
-│       ├── registry.js     # 패턴 레지스트리
-│       ├── interface.js    # 인터페이스 조작 패턴
-│       └── sneaking.js     # 규정의 숨김 패턴
+│   ├── patterns/           # 패턴 정의 (탐지만)
+│   │   ├── registry.js     # 패턴 레지스트리
+│   │   ├── interface.js    # 인터페이스 조작 패턴
+│   │   └── sneaking.js     # 규정의 숨김 패턴
+│   └── actions/            # 액션 로직 (수정/교정)
+│       ├── registry.js     # 액션 설정 레지스트리 (단일 설정 소스)
+│       ├── implementations.js  # 순수 액션 함수들
+│       └── executor.js     # 액션 실행기 + undo
 ├── popup/                  # 팝업 UI
 ├── styles/highlight.css    # 하이라이팅 스타일
 ├── _locales/               # 다국어 (ko, en)
@@ -41,7 +45,9 @@ lighton/
 
 ### 2. 패턴 추가 방법
 
-새로운 다크패턴을 추가할 때는 다음 스키마를 따릅니다:
+새로운 다크패턴을 추가할 때는 **두 곳**에 등록이 필요합니다:
+
+#### A. 패턴 정의 (scripts/patterns/*.js)
 
 ```javascript
 {
@@ -62,6 +68,19 @@ lighton/
   }
 }
 ```
+
+#### B. 액션 설정 (scripts/actions/registry.js)
+
+```javascript
+'pattern-id': {
+  available: ['equalize', 'hide'],    // 사용 가능한 액션 목록
+  primary: 'equalize',                // 기본 액션
+  autoApply: { enabled: false },      // 자동 적용 여부
+  readabilityFix: { enabled: true, fontSize: 18 }  // 가독성 수정
+}
+```
+
+**주의**: 액션 없이 탐지만 하는 패턴도 `actions/registry.js`에 기본 설정 등록 권장
 
 ### 3. UI 변경 시 주의사항
 

@@ -15,11 +15,27 @@
 
 | 파일 | 역할 | 수정 시 주의 |
 |------|------|-------------|
-| `manifest.json` | Extension 설정 | 권한 변경 주의 |
+| `manifest.json` | Extension 설정 | 권한 변경 주의, 스크립트 로드 순서 |
 | `scripts/detector.js` | 탐지 엔진 | 성능 영향 큼 |
 | `scripts/highlighter.js` | UI 렌더링 | z-index, 스타일 충돌 |
-| `scripts/patterns/*.js` | 패턴 정의 | 스키마 준수 |
+| `scripts/patterns/*.js` | 패턴 정의 (탐지만) | 스키마 준수 |
+| `scripts/actions/registry.js` | 액션 설정 (단일 소스) | autoApply, readabilityFix 설정 |
+| `scripts/actions/implementations.js` | 액션 구현 함수 | 순수 함수 유지 |
+| `scripts/actions/executor.js` | 액션 실행/undo | Actions API 제공 |
 | `styles/highlight.css` | 하이라이팅 스타일 | !important 사용 |
+
+## 아키텍처 원칙
+
+### 탐지/액션 분리
+
+| 디렉토리 | 역할 | 담당 |
+|---------|------|------|
+| `scripts/patterns/` | 패턴 탐지만 | 무엇을 찾을지 |
+| `scripts/actions/` | 액션 실행만 | 어떻게 수정할지 |
+
+- **패턴 파일은 탐지만**: UI 수정 로직 포함 금지
+- **액션 설정은 registry.js 한 곳에**: 하드코딩 금지
+- **content.js는 조율만**: ActionRegistry 조회해서 동작
 
 ## 협업 규칙
 
