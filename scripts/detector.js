@@ -116,6 +116,56 @@ window.LightOn.Detector = (function () {
   }
 
   /**
+   * Check if element is near a price-related context
+   */
+  const priceContextSelectors = [
+    '[class*="price"]', '[class*="cost"]', '[class*="amount"]', '[class*="total"]',
+    '[class*="checkout"]', '[class*="cart"]', '[class*="order"]',
+    '[class*="payment"]', '[class*="billing"]', '[class*="shipping"]',
+    '[id*="price"]', '[id*="cost"]', '[id*="amount"]', '[id*="total"]',
+    '[id*="checkout"]', '[id*="cart"]', '[id*="order"]'
+  ];
+
+  const priceTextPattern = /(?:[$€£¥₩]|(?:\b(?:usd|eur|gbp|jpy|krw|price|total|amount|cost|fee|charge|shipping|tax)\b)|(?:\d[\d,\.]*\s*(?:원|달러|엔|유로|파운드|위안))|(?:가격|요금|금액|합계|총액|결제|구매|배송비|세금))/i;
+
+  function isPriceText(text) {
+    return !!text && priceTextPattern.test(text);
+  }
+
+  function hasPriceContext(element) {
+    if (!element) return false;
+
+    // Structural hints via closest selectors
+    for (const selector of priceContextSelectors) {
+      try {
+        if (element.closest(selector)) return true;
+      } catch (e) {
+        // Invalid selector, skip
+      }
+    }
+
+    // Text-based hints in nearby elements
+    const candidates = new Set();
+    const addCandidate = (el) => {
+      if (el && el.nodeType === 1) candidates.add(el);
+    };
+
+    addCandidate(element);
+    addCandidate(element.parentElement);
+    addCandidate(element.parentElement?.parentElement);
+
+    const siblings = element.parentElement ? Array.from(element.parentElement.children) : [];
+    for (const sibling of siblings) addCandidate(sibling);
+
+    for (const candidate of candidates) {
+      const text = getVisibleText(candidate);
+      if (isPriceText(text)) return true;
+    }
+
+    return false;
+  }
+
+  /**
    * Check if element is within a modal/dialog context
    */
   function isInModalContext(element, contextSelectors) {
@@ -352,6 +402,9 @@ window.LightOn.Detector = (function () {
       // Check context
       if (!matchesContext(element, detector.contexts)) continue;
 
+      // Check price context if required
+      if (detector.nearPriceElement && !hasPriceContext(element)) continue;
+
       // Check modal context if required
       if (detector.requiresModalContext && !isInModalContext(element, detector.contextSelectors)) {
         continue;
@@ -390,6 +443,11 @@ window.LightOn.Detector = (function () {
         for (const element of elements) {
           // Check context selectors
           if (detector.contextSelectors && !isInModalContext(element, detector.contextSelectors)) {
+            continue;
+          }
+
+          // Check price context if required
+          if (detector.nearPriceElement && !hasPriceContext(element)) {
             continue;
           }
 
