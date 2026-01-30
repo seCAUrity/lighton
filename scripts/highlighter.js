@@ -31,14 +31,21 @@ window.LightOn.Highlighter = (function () {
     dot.setAttribute('role', 'status');
     dot.setAttribute('aria-label', registry.getLocalizedText(pattern.name, currentLang));
 
-    // Hover handlers for tooltip
+    // Hover handlers for tooltip and preview
     dot.addEventListener('mouseenter', (e) => {
       cancelHideTooltip();
       showHoverTooltip(pattern, dot, e, targetElement);
+
+      // Preview original state (before auto-fix was applied)
+      const actionId = targetElement.getAttribute('data-lighton-action-id');
+      if (actionId && window.LightOn.Actions) {
+        window.LightOn.Actions.previewOriginal(actionId);
+      }
     });
 
     dot.addEventListener('mouseleave', () => {
       scheduleHideTooltip();
+      // Preview will end when tooltip is actually hidden (in hideHoverTooltip)
     });
 
     // Click handler - show persistent tooltip
@@ -149,6 +156,11 @@ window.LightOn.Highlighter = (function () {
     if (hoverTooltip) {
       hoverTooltip.remove();
       hoverTooltip = null;
+    }
+
+    // End preview and re-apply action when tooltip is hidden
+    if (window.LightOn.Actions && window.LightOn.Actions.isPreviewing()) {
+      window.LightOn.Actions.endPreview();
     }
   }
 
