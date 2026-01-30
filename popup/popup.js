@@ -65,6 +65,7 @@
       secessionNotFound: '이 사이트의 탈퇴 정보를 찾을 수 없습니다.',
       secessionError: '정보를 불러올 수 없습니다.',
       secessionViewGuide: '탈퇴 가이드 보기',
+      secessionSeeGuide: '자세한 정보는 가이드를 참조하세요.',
       secessionDifficultyEasy: '쉬움',
       secessionDifficultyMedium: '중간',
       secessionDifficultyHard: '어려움',
@@ -97,6 +98,7 @@
       secessionNotFound: 'No deletion info available for this site.',
       secessionError: 'Unable to load information.',
       secessionViewGuide: 'View Deletion Guide',
+      secessionSeeGuide: '자세한 정보는 가이드를 참조하세요.',
       secessionDifficultyEasy: 'Easy',
       secessionDifficultyMedium: 'Medium',
       secessionDifficultyHard: 'Hard',
@@ -441,9 +443,7 @@
     }
 
     // 설명
-    elements.secessionNotes.textContent = data.notes || (lang === 'ko'
-      ? '자세한 정보는 가이드를 참조하세요.'
-      : 'See guide for more details.');
+    elements.secessionNotes.textContent = data.notes || t.secessionSeeGuide;
 
     // 액션 링크
     elements.secessionAction.href = data.url;
