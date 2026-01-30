@@ -78,7 +78,7 @@ window.LightOn.ActionRegistry = (function() {
     'auto-add-cart': {
       available: ['uncheck'],
       primary: 'uncheck',
-      autoApply: { enabled: false },
+      autoApply: { enabled: true, action: 'uncheck' },
       readabilityFix: { enabled: false }
     },
     'free-trial-trap': {

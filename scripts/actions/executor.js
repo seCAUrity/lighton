@@ -13,9 +13,8 @@ window.LightOn.Actions = (function() {
   // Track applied actions for undo functionality
   const appliedActions = new Map();
 
-  // Track previewing state
-  let previewingActionId = null;
-  let previewingReadabilityState = null;
+  // Track previewing states (Map: actionId -> { readabilityState })
+  const previewingStates = new Map();
 
   // Get dependencies
   function getRegistry() {
@@ -102,24 +101,20 @@ window.LightOn.Actions = (function() {
    */
   function previewOriginal(actionId) {
     // Already previewing this action
-    if (previewingActionId === actionId) return true;
-
-    // End any existing preview
-    if (previewingActionId) {
-      endPreview();
-    }
+    if (previewingStates.has(actionId)) return true;
 
     const action = appliedActions.get(actionId);
     if (action && action.restore) {
       // Temporarily restore original state
       action.restore();
-      previewingActionId = actionId;
 
       // Readability fix도 preview (원래 상태 표시)
+      let readabilityState = null;
       if (window.LightOn.previewReadabilityFix && action.element) {
-        previewingReadabilityState = window.LightOn.previewReadabilityFix(action.element);
+        readabilityState = window.LightOn.previewReadabilityFix(action.element);
       }
 
+      previewingStates.set(actionId, { readabilityState });
       return true;
     }
     return false;
@@ -127,26 +122,46 @@ window.LightOn.Actions = (function() {
 
   /**
    * End preview and re-apply the action
+   * @param {string} actionId - Action ID to end preview (optional for backwards compatibility)
    * @returns {boolean} Whether action was re-applied
    */
-  function endPreview() {
-    if (!previewingActionId) return false;
+  function endPreview(actionId = null) {
+    // If no actionId provided, end all previews (backwards compatibility)
+    if (!actionId) {
+      let result = false;
+      previewingStates.forEach((state, id) => {
+        if (endPreviewSingle(id)) result = true;
+      });
+      return result;
+    }
 
-    const action = appliedActions.get(previewingActionId);
+    return endPreviewSingle(actionId);
+  }
+
+  /**
+   * End preview for a single action
+   * @param {string} actionId - Action ID to end preview
+   * @returns {boolean} Whether action was re-applied
+   */
+  function endPreviewSingle(actionId) {
+    if (!actionId || !previewingStates.has(actionId)) return false;
+
+    const state = previewingStates.get(actionId);
+    const action = appliedActions.get(actionId);
+
     if (!action) {
-      previewingActionId = null;
-      previewingReadabilityState = null;
+      previewingStates.delete(actionId);
       return false;
     }
 
     const { patternId, element, actionType } = action;
-    previewingActionId = null;
 
     // Readability fix 복원
-    if (window.LightOn.restoreReadabilityFix && element && previewingReadabilityState) {
-      window.LightOn.restoreReadabilityFix(element, previewingReadabilityState);
+    if (window.LightOn.restoreReadabilityFix && element && state.readabilityState) {
+      window.LightOn.restoreReadabilityFix(element, state.readabilityState);
     }
-    previewingReadabilityState = null;
+
+    previewingStates.delete(actionId);
 
     // Re-apply the action (need to execute again)
     if (element && patternId && actionType) {
@@ -189,10 +204,12 @@ window.LightOn.Actions = (function() {
 
   /**
    * Check if currently previewing
+   * @param {string} actionId - Optional action ID to check specific preview
    * @returns {boolean}
    */
-  function isPreviewing() {
-    return previewingActionId !== null;
+  function isPreviewing(actionId = null) {
+    if (actionId) return previewingStates.has(actionId);
+    return previewingStates.size > 0;
   }
 
   /**

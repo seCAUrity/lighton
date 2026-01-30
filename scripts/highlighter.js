@@ -31,29 +31,40 @@ window.LightOn.Highlighter = (function () {
     dot.setAttribute('role', 'status');
     dot.setAttribute('aria-label', registry.getLocalizedText(pattern.name, currentLang));
 
-    // Hover handlers for tooltip and preview
-    dot.addEventListener('mouseenter', (e) => {
-      cancelHideTooltip();
-      showHoverTooltip(pattern, dot, e, targetElement);
+    // Track preview state
+    let isPreviewing = false;
 
-      // Preview original state (before auto-fix was applied)
-      const actionId = targetElement.getAttribute('data-lighton-action-id');
-      if (actionId && window.LightOn.Actions) {
-        window.LightOn.Actions.previewOriginal(actionId);
-      }
-    });
-
-    dot.addEventListener('mouseleave', () => {
-      scheduleHideTooltip();
-      // Preview will end when tooltip is actually hidden (in hideHoverTooltip)
-    });
-
-    // Click handler - show persistent tooltip
+    // Click handler - show tooltip and toggle preview
     dot.addEventListener('click', (e) => {
       e.stopPropagation();
       e.preventDefault();
-      cancelHideTooltip();
-      showHoverTooltip(pattern, dot, e, targetElement);
+
+      if (isPreviewing) {
+        // End preview - restore modified state
+        isPreviewing = false;
+        dot.classList.remove('lighton-dot--previewing');
+        hideHoverTooltip();
+
+        const actionId = targetElement.getAttribute('data-lighton-action-id');
+        if (actionId && window.LightOn.Actions) {
+          window.LightOn.Actions.endPreview(actionId);
+        } else if (dot._readabilityState && window.LightOn.restoreReadabilityFix) {
+          window.LightOn.restoreReadabilityFix(targetElement, dot._readabilityState);
+          dot._readabilityState = null;
+        }
+      } else {
+        // Start preview - show original state
+        isPreviewing = true;
+        dot.classList.add('lighton-dot--previewing');
+        showHoverTooltip(pattern, dot, e, targetElement);
+
+        const actionId = targetElement.getAttribute('data-lighton-action-id');
+        if (actionId && window.LightOn.Actions) {
+          window.LightOn.Actions.previewOriginal(actionId);
+        } else if (window.LightOn.previewReadabilityFix && targetElement) {
+          dot._readabilityState = window.LightOn.previewReadabilityFix(targetElement);
+        }
+      }
     });
 
     return dot;
@@ -62,6 +73,7 @@ window.LightOn.Highlighter = (function () {
   // Hover tooltip element
   let hoverTooltip = null;
   let hideTooltipTimeout = null;
+  let currentTooltipActionId = null;
 
   /**
    * Schedule hiding the tooltip after a delay
@@ -96,8 +108,11 @@ window.LightOn.Highlighter = (function () {
     hideHoverTooltip();
 
     // Find the target element (the one being highlighted)
-    const targetElement = passedTargetElement ||
+    const targetElement = passedTargetElement || dot._targetElement ||
       (dot.parentElement?.hasAttribute('data-lighton-pattern') ? dot.parentElement : dot.previousSibling);
+
+    // Track the current actionId for this tooltip
+    currentTooltipActionId = targetElement?.getAttribute('data-lighton-action-id');
 
     const tooltip = createTooltip(pattern, targetElement);
     tooltip.style.pointerEvents = 'auto';
@@ -158,10 +173,11 @@ window.LightOn.Highlighter = (function () {
       hoverTooltip = null;
     }
 
-    // End preview and re-apply action when tooltip is hidden
-    if (window.LightOn.Actions && window.LightOn.Actions.isPreviewing()) {
-      window.LightOn.Actions.endPreview();
+    // End preview only for the specific actionId of this tooltip
+    if (currentTooltipActionId && window.LightOn.Actions?.isPreviewing(currentTooltipActionId)) {
+      window.LightOn.Actions.endPreview(currentTooltipActionId);
     }
+    currentTooltipActionId = null;
   }
 
   /**
@@ -207,54 +223,6 @@ window.LightOn.Highlighter = (function () {
     description.className = 'lighton-tooltip__description';
     description.textContent = registry.getLocalizedText(pattern.description, currentLang);
     tooltip.appendChild(description);
-
-    // Actions section
-    if (window.LightOn.Actions && targetElement) {
-      const actions = window.LightOn.Actions.getAvailableActions(pattern.id);
-      if (actions && actions.length > 0) {
-        const actionsSection = document.createElement('div');
-        actionsSection.className = 'lighton-tooltip__actions';
-
-        const labels = window.LightOn.Actions.getActionLabels(currentLang);
-
-        actions.forEach(actionType => {
-          const button = document.createElement('button');
-          button.className = 'lighton-tooltip__action-btn';
-          button.textContent = labels[actionType] || actionType;
-          button.setAttribute('data-action-type', actionType);
-
-          button.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const result = window.LightOn.Actions.executeAction(pattern.id, targetElement, actionType);
-            if (result) {
-              // Update button to show success
-              button.textContent = labels[actionType + 'd'] || '✓';
-              button.classList.add('lighton-tooltip__action-btn--applied');
-              button.disabled = true;
-
-              // Add undo button
-              const undoBtn = document.createElement('button');
-              undoBtn.className = 'lighton-tooltip__action-btn lighton-tooltip__action-btn--undo';
-              undoBtn.textContent = labels.undo;
-              undoBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (window.LightOn.Actions.undoAction(result.actionId)) {
-                  button.textContent = labels[actionType];
-                  button.classList.remove('lighton-tooltip__action-btn--applied');
-                  button.disabled = false;
-                  undoBtn.remove();
-                }
-              });
-              button.parentNode.insertBefore(undoBtn, button.nextSibling);
-            }
-          });
-
-          actionsSection.appendChild(button);
-        });
-
-        tooltip.appendChild(actionsSection);
-      }
-    }
 
     // Footer
     const footer = document.createElement('div');
@@ -352,7 +320,7 @@ window.LightOn.Highlighter = (function () {
     // Check if element can contain the dot properly
     const computedStyle = window.getComputedStyle(element);
 
-    // Void elements cannot have children (input, img, br, etc.)
+    // Void elements cannot have children
     const voidElements = ['INPUT', 'IMG', 'BR', 'HR', 'AREA', 'BASE', 'COL', 'EMBED', 'SOURCE', 'TRACK', 'WBR'];
     const isVoidElement = voidElements.includes(element.tagName);
 
@@ -368,11 +336,11 @@ window.LightOn.Highlighter = (function () {
     const dot = createDot(pattern, element);
 
     if (isInline) {
-      // For inline elements and void elements, insert dot after the element
+      // For inline elements, insert dot after the element
       dot.classList.add('lighton-dot--inline');
       element.parentNode.insertBefore(dot, element.nextSibling);
     } else {
-      // For block elements, position absolutely
+      // For block elements, position absolutely inside
       if (computedStyle.position === 'static') {
         element.style.position = 'relative';
       }
@@ -462,7 +430,7 @@ window.LightOn.Highlighter = (function () {
       highlightElements.delete(element);
     }
 
-    // Remove any dots/badges that might have been added
+    // Remove any dots inside element
     const dots = element.querySelectorAll('[data-lighton-dot]');
     dots.forEach(dot => dot.remove());
 

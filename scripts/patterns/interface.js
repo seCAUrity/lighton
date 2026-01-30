@@ -71,13 +71,16 @@
             'input[type="checkbox"]:checked'
           ],
           nearbyTextPatterns: [
-            // Korean
+            // Korean - 마케팅/구독/동의 관련만 (보험/보증은 auto-add-cart에서 처리)
             /마케팅|뉴스레터|동의|수신|프로모션|광고|알림|이벤트|제3자|제휴/i,
             // English
             /newsletter|marketing|subscribe|agree|promotion|advertising|notify|third.?party|partner/i
           ],
           excludePatterns: [
-            /remember\s*me|로그인\s*유지|자동\s*로그인|keep\s*me\s*logged/i
+            /remember\s*me|로그인\s*유지|자동\s*로그인|keep\s*me\s*logged/i,
+            // Exclude insurance/warranty checkboxes (handled by auto-add-cart pattern)
+            /보험|보증|연장|보호|프로텍션|케어|안심|플러스/i,
+            /insurance|warranty|protection|extended|care\s*plan|coverage/i
           ]
         }
       ],

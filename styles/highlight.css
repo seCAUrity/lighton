@@ -92,6 +92,30 @@
   border: 1.5px solid rgba(255, 255, 255, 0.9) !important;
 }
 
+/* Inline dot for text elements */
+.lighton-dot--inline {
+  position: relative !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  margin-left: 4px !important;
+  top: auto !important;
+  right: auto !important;
+}
+
+/* Previewing state - pulsing ring */
+.lighton-dot--previewing {
+  animation: lighton-preview-pulse 1s infinite !important;
+}
+
+@keyframes lighton-preview-pulse {
+  0%, 100% {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(255, 184, 0, 0.6);
+  }
+  50% {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 4px rgba(255, 184, 0, 0.2);
+  }
+}
+
 .lighton-dot:hover {
   transform: scale(1.4) !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
@@ -119,15 +143,6 @@
   }
 }
 
-/* Inline dot for text elements */
-.lighton-dot--inline {
-  position: relative !important;
-  display: inline-block !important;
-  vertical-align: middle !important;
-  margin-left: 4px !important;
-  top: auto !important;
-  right: auto !important;
-}
 
 /* ===== Legacy Badge (kept for compatibility) ===== */
 .lighton-badge {
@@ -208,64 +223,6 @@
 .lighton-tooltip__description {
   color: rgba(255, 255, 255, 0.85) !important;
   font-size: 12px !important;
-}
-
-.lighton-tooltip__actions {
-  margin: 10px -2px 6px !important;
-  display: flex !important;
-  gap: 6px !important;
-  flex-wrap: wrap !important;
-}
-
-.lighton-tooltip__action-btn {
-  flex: 1 !important;
-  min-width: 80px !important;
-  padding: 6px 12px !important;
-  background: var(--lighton-primary) !important;
-  color: var(--lighton-dark) !important;
-  border: none !important;
-  border-radius: 5px !important;
-  font-size: 11px !important;
-  font-weight: 600 !important;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-  cursor: pointer !important;
-  transition: background 0.2s ease, transform 0.1s ease !important;
-  pointer-events: auto !important;
-}
-
-.lighton-tooltip__action-btn:hover {
-  background: var(--lighton-primary-dark) !important;
-  transform: translateY(-1px) !important;
-}
-
-.lighton-tooltip__action-btn:active {
-  transform: translateY(0) !important;
-}
-
-.lighton-tooltip__action-btn--applied {
-  background: #4CAF50 !important;
-  color: white !important;
-  cursor: default !important;
-}
-
-.lighton-tooltip__action-btn--applied:hover {
-  background: #45a049 !important;
-  transform: none !important;
-}
-
-.lighton-tooltip__action-btn--undo {
-  background: rgba(255, 255, 255, 0.2) !important;
-  color: var(--lighton-text-inverse) !important;
-  min-width: 60px !important;
-}
-
-.lighton-tooltip__action-btn--undo:hover {
-  background: rgba(255, 255, 255, 0.3) !important;
-}
-
-.lighton-tooltip__action-btn:disabled {
-  opacity: 0.7 !important;
-  cursor: not-allowed !important;
 }
 
 .lighton-tooltip__footer {
@@ -381,24 +338,37 @@
 
 /* ===== Focus/Scroll Animation ===== */
 .lighton-focus {
+  position: relative !important;
+  z-index: 2147483645 !important;
+  isolation: isolate !important;
+  /* Brighten the element to stand out from dimmed background */
+  filter: brightness(1.15) !important;
+  background-color: var(--lighton-light, #fff) !important;
+  border-radius: 4px !important;
   animation: lighton-focus-pulse 1.5s ease-out !important;
+}
+
+/* For elements that shouldn't have white background (like buttons, inputs) */
+.lighton-focus:is(button, input, select, a, [role="button"]) {
+  background-color: inherit !important;
+  filter: brightness(1.2) drop-shadow(0 0 8px rgba(255, 184, 0, 0.8)) !important;
 }
 
 @keyframes lighton-focus-pulse {
   0% {
     outline: 4px solid var(--lighton-primary) !important;
     outline-offset: 4px !important;
-    box-shadow: 0 0 0 8px rgba(255, 184, 0, 0.4), 0 0 30px rgba(255, 184, 0, 0.6) !important;
+    box-shadow: 0 0 0 8px rgba(255, 184, 0, 0.5), 0 0 30px rgba(255, 184, 0, 0.7) !important;
   }
   50% {
     outline: 4px solid var(--lighton-primary) !important;
     outline-offset: 6px !important;
-    box-shadow: 0 0 0 12px rgba(255, 184, 0, 0.2), 0 0 40px rgba(255, 184, 0, 0.4) !important;
+    box-shadow: 0 0 0 12px rgba(255, 184, 0, 0.3), 0 0 40px rgba(255, 184, 0, 0.5) !important;
   }
   100% {
     outline: 3px solid var(--lighton-primary) !important;
     outline-offset: 2px !important;
-    box-shadow: 0 0 8px rgba(255, 184, 0, 0.15) !important;
+    box-shadow: 0 0 12px rgba(255, 184, 0, 0.3) !important;
   }
 }
 
@@ -409,7 +379,7 @@
   left: 0 !important;
   right: 0 !important;
   bottom: 0 !important;
-  background: rgba(0, 0, 0, 0.3) !important;
+  background: rgba(0, 0, 0, 0.5) !important;
   z-index: 2147483640 !important;
   pointer-events: none !important;
   animation: lighton-overlay-fade 1.5s ease-out forwards !important;
@@ -420,17 +390,11 @@
     opacity: 1;
   }
   70% {
-    opacity: 0.5;
+    opacity: 0.6;
   }
   100% {
     opacity: 0;
   }
-}
-
-/* Focused element should be above the overlay */
-.lighton-focus {
-  position: relative !important;
-  z-index: 2147483645 !important;
 }
 
 /* ===== Disabled State ===== */
