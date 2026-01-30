@@ -51,12 +51,7 @@ window.LightOn.Actions = (function() {
         break;
 
       case 'equalize':
-        // Use different equalize implementations based on pattern
-        if (patternId === 'asymmetric-buttons') {
-          result = Impl.equalizeButtons(element);
-        } else {
-          result = Impl.equalizeVisualHierarchy(element);
-        }
+        result = Impl.equalizeVisualHierarchy(element);
         break;
 
       case 'neutralize':

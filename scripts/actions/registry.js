@@ -32,9 +32,9 @@ window.LightOn.ActionRegistry = (function() {
   const actionConfig = {
     // Interface patterns
     'asymmetric-buttons': {
-      available: ['equalize'],
-      primary: 'equalize',
-      autoApply: { enabled: true, action: 'equalize' },
+      available: ['hide'],
+      primary: 'hide',
+      autoApply: { enabled: false },
       readabilityFix: { enabled: true }
     },
     'preselected-checkbox': {
