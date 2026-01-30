@@ -246,7 +246,13 @@ window.LightOn.Highlighter = (function() {
   function applyDot(element, pattern) {
     // Check if element can contain the dot properly
     const computedStyle = window.getComputedStyle(element);
-    const isInline = computedStyle.display === 'inline' ||
+
+    // Void elements cannot have children (input, img, br, etc.)
+    const voidElements = ['INPUT', 'IMG', 'BR', 'HR', 'AREA', 'BASE', 'COL', 'EMBED', 'SOURCE', 'TRACK', 'WBR'];
+    const isVoidElement = voidElements.includes(element.tagName);
+
+    const isInline = isVoidElement ||
+                     computedStyle.display === 'inline' ||
                      computedStyle.display === 'inline-block' ||
                      element.tagName === 'A' ||
                      element.tagName === 'SPAN';
@@ -257,7 +263,7 @@ window.LightOn.Highlighter = (function() {
     const dot = createDot(pattern, element);
 
     if (isInline) {
-      // For inline elements, insert dot after the element
+      // For inline elements and void elements, insert dot after the element
       dot.classList.add('lighton-dot--inline');
       element.parentNode.insertBefore(dot, element.nextSibling);
     } else {
