@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LightOn - Secession API Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1 {
+      color: #1a1a2e;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+    }
+    .section {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #1a1a2e;
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+    .test-links {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .test-link {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      background: #f9fafb;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #1a1a2e;
+      border-left: 3px solid #FFB800;
+      transition: all 0.2s;
+    }
+    .test-link:hover {
+      background: #ebedf0;
+      padding-left: 20px;
+    }
+    .test-link-icon {
+      font-size: 20px;
+      margin-right: 12px;
+    }
+    .test-link-info {
+      flex: 1;
+    }
+    .test-link-title {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .test-link-desc {
+      font-size: 12px;
+      color: #666;
+    }
+    .badge {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-success {
+      background: rgba(78, 205, 196, 0.1);
+      color: #2d9e93;
+    }
+    .badge-warning {
+      background: rgba(255, 184, 0, 0.1);
+      color: #cc9400;
+    }
+    .badge-error {
+      background: rgba(255, 107, 107, 0.1);
+      color: #d43f3f;
+    }
+    .instructions {
+      background: linear-gradient(135deg, rgba(255, 184, 0, 0.05), rgba(255, 184, 0, 0.1));
+      padding: 16px;
+      border-radius: 8px;
+      border-left: 3px solid #FFB800;
+      margin-bottom: 20px;
+    }
+    .instructions h3 {
+      margin-top: 0;
+      color: #1a1a2e;
+      font-size: 16px;
+    }
+    .instructions ul {
+      margin: 10px 0 0 20px;
+      color: #555;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚪 LightOn - Secession API Test Page</h1>
+  <p class="subtitle">JustDeleteAccount.com API 통합 테스트</p>
+
+  <div class="instructions">
+    <h3>📋 테스트 방법</h3>
+    <ul>
+      <li>LightOn Extension이 설치되어 있어야 합니다</li>
+      <li>아래 링크를 클릭하여 해당 사이트로 이동합니다</li>
+      <li>LightOn 팝업을 열어서 "계정 탈퇴 정보" 섹션을 확인합니다</li>
+      <li>각 테스트 시나리오별 기대 결과를 확인합니다</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>✅ 알려진 서비스 (API 성공)</h2>
+    <p style="color: #666; font-size: 13px; margin-bottom: 15px;">
+      JustDeleteAccount.com에 등록된 서비스들입니다. 탈퇴 정보가 표시되어야 합니다.
+    </p>
+    <div class="test-links">
+      <a href="https://www.facebook.com" class="test-link" target="_blank">
+        <span class="test-link-icon">📘</span>
+        <div class="test-link-info">
+          <div class="test-link-title">Facebook</div>
+          <div class="test-link-desc">난이도: Medium (중간) - 30일 유예 기간</div>
+        </div>
+        <span class="badge badge-warning">Medium</span>
+      </a>
+
+      <a href="https://www.google.com" class="test-link" target="_blank">
+        <span class="test-link-icon">🔍</span>
+        <div class="test-link-info">
+          <div class="test-link-title">Google</div>
+          <div class="test-link-desc">난이도: Easy (쉬움) - 계정 설정에서 바로 삭제 가능</div>
+        </div>
+        <span class="badge badge-success">Easy</span>
+      </a>
+
+      <a href="https://www.twitter.com" class="test-link" target="_blank">
+        <span class="test-link-icon">🐦</span>
+        <div class="test-link-info">
+          <div class="test-link-title">Twitter (X)</div>
+          <div class="test-link-desc">난이도: Medium (중간) - 30일 복구 가능</div>
+        </div>
+        <span class="badge badge-warning">Medium</span>
+      </a>
+
+      <a href="https://www.instagram.com" class="test-link" target="_blank">
+        <span class="test-link-icon">📷</span>
+        <div class="test-link-info">
+          <div class="test-link-title">Instagram</div>
+          <div class="test-link-desc">난이도: Medium (중간)</div>
+        </div>
+        <span class="badge badge-warning">Medium</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>❓ 알려지지 않은 서비스 (404 Not Found)</h2>
+    <p style="color: #666; font-size: 13px; margin-bottom: 15px;">
+      JustDeleteAccount.com에 등록되지 않은 서비스입니다. "탈퇴 정보를 찾을 수 없습니다" 메시지가 표시되어야 합니다.
+    </p>
+    <div class="test-links">
+      <a href="https://www.example.com" class="test-link" target="_blank">
+        <span class="test-link-icon">🌐</span>
+        <div class="test-link-info">
+          <div class="test-link-title">Example.com</div>
+          <div class="test-link-desc">등록되지 않은 도메인</div>
+        </div>
+        <span class="badge badge-error">Not Found</span>
+      </a>
+
+      <a href="https://www.github.com" class="test-link" target="_blank">
+        <span class="test-link-icon">🐙</span>
+        <div class="test-link-info">
+          <div class="test-link-title">GitHub</div>
+          <div class="test-link-desc">등록 여부 확인 필요</div>
+        </div>
+        <span class="badge badge-warning">Unknown</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🧪 추가 테스트 시나리오</h2>
+    <div style="margin-top: 15px;">
+      <h3 style="font-size: 14px; margin-bottom: 10px; color: #1a1a2e;">1. 캐시 테스트</h3>
+      <ul style="margin-left: 20px; color: #555; line-height: 1.6; font-size: 13px;">
+        <li>Facebook 방문 → 팝업 열기 (API 호출 발생)</li>
+        <li>팝업 닫기 → 다시 열기 (캐시 사용, API 호출 안 함)</li>
+        <li>Console에서 "Cache hit" 로그 확인</li>
+      </ul>
+
+      <h3 style="font-size: 14px; margin-top: 15px; margin-bottom: 10px; color: #1a1a2e;">2. 언어 전환 테스트</h3>
+      <ul style="margin-left: 20px; color: #555; line-height: 1.6; font-size: 13px;">
+        <li>브라우저 언어 변경: chrome://settings/languages</li>
+        <li>한국어 → 영어 전환 후 팝업 재오픈</li>
+        <li>UI 텍스트 및 난이도 레이블 변경 확인</li>
+      </ul>
+
+      <h3 style="font-size: 14px; margin-top: 15px; margin-bottom: 10px; color: #1a1a2e;">3. 에러 핸들링 테스트</h3>
+      <ul style="margin-left: 20px; color: #555; line-height: 1.6; font-size: 13px;">
+        <li>네트워크 오프라인 상태에서 테스트</li>
+        <li>"정보를 불러올 수 없습니다" 메시지 표시 확인</li>
+        <li>Retry 버튼 클릭 테스트</li>
+      </ul>
+
+      <h3 style="font-size: 14px; margin-top: 15px; margin-bottom: 10px; color: #1a1a2e;">4. Chrome 내부 페이지</h3>
+      <ul style="margin-left: 20px; color: #555; line-height: 1.6; font-size: 13px;">
+        <li>chrome://extensions 방문</li>
+        <li>팝업에서 탈퇴 섹션이 표시되지 않아야 함</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section" style="background: linear-gradient(135deg, rgba(255, 184, 0, 0.05), rgba(255, 184, 0, 0.1)); border-left: 3px solid #FFB800;">
+    <h2>💡 디버깅 팁</h2>
+    <ul style="margin-left: 20px; color: #555; line-height: 1.8; font-size: 13px;">
+      <li><strong>Console 로그 확인:</strong> Chrome DevTools → Console에서 "[LightOn Secession]" 로그 확인</li>
+      <li><strong>Network 탭:</strong> API 호출 확인 (https://api.justdeleteaccount.com/v1/...)</li>
+      <li><strong>Extension 재시작:</strong> chrome://extensions → LightOn 새로고침 버튼 클릭</li>
+      <li><strong>캐시 초기화:</strong> Extension 재시작 또는 1시간 대기</li>
+    </ul>
+  </div>
+
+  <div class="section" style="background: #1a1a2e; color: white;">
+    <h2 style="color: #FFB800;">✅ 체크리스트</h2>
+    <ul style="margin-left: 20px; line-height: 1.8; font-size: 13px;">
+      <li>[ ] Facebook, Google, Twitter에서 탈퇴 정보 정상 표시</li>
+      <li>[ ] 알 수 없는 도메인에서 "Not Found" 메시지 표시</li>
+      <li>[ ] chrome:// 페이지에서 섹션 숨김</li>
+      <li>[ ] 캐시 작동 확인 (Console 로그)</li>
+      <li>[ ] 네트워크 오류 시 Retry 버튼 작동</li>
+      <li>[ ] 한국어/영어 전환 시 UI 텍스트 변경</li>
+      <li>[ ] 난이도 배지 5가지 스타일 확인 (easy/medium/hard/limited/impossible)</li>
+      <li>[ ] 가이드 링크 클릭 시 새 탭에서 열림</li>
+      <li>[ ] 다크패턴 탐지와 독립적 작동</li>
+    </ul>
+  </div>
+
+  <footer style="text-align: center; margin-top: 40px; color: #666; font-size: 12px;">
+    <p>🔧 LightOn Chrome Extension - JustDeleteAccount.com API Integration Test</p>
+    <p>Made with ❤️ by Claude AI</p>
+  </footer>
+</body>
+</html>

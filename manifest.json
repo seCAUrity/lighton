@@ -1,4 +1,4 @@
-{
+﻿{
   "manifest_version": 3,
   "name": "__MSG_extensionName__",
   "description": "__MSG_extensionDescription__",
@@ -29,6 +29,9 @@
         "scripts/patterns/registry.js",
         "scripts/patterns/interface.js",
         "scripts/patterns/sneaking.js",
+        "scripts/actions/registry.js",
+        "scripts/actions/implementations.js",
+        "scripts/actions/executor.js",
         "scripts/detector.js",
         "scripts/highlighter.js",
         "scripts/content.js"
@@ -45,3 +48,5 @@
     "<all_urls>"
   ]
 }
+
+
