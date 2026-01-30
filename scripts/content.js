@@ -5,7 +5,7 @@
  * Initializes detection and highlighting on page load.
  */
 
-(function() {
+(function () {
   'use strict';
 
   // Wait for LightOn modules to be available
@@ -72,6 +72,9 @@
     // Apply highlights
     Highlighter.highlightAll(currentResults);
 
+    // AUTO-APPLY: Automatically equalize detected patterns
+    autoApplyActions(currentResults);
+
     // Update indicator
     const stats = Detector.getStats(currentResults);
     Highlighter.createIndicator(stats);
@@ -80,6 +83,66 @@
     sendResultsToBackground(stats);
 
     console.log('[LightOn] Scan complete. Found:', stats.total, 'patterns');
+  }
+
+  /**
+   * Automatically apply equalization actions to detected patterns
+   * 탐지된 다크패턴에 자동으로 균등화/중립화 적용
+   * NOTE: 요금제 카드(visual-hierarchy-manipulation)는 폰트 깨짐 방지를 위해 제외
+   */
+  function autoApplyActions(results) {
+    if (!window.LightOn.Actions) {
+      console.warn('[LightOn] Actions module not available for auto-apply');
+      return;
+    }
+
+    const Actions = window.LightOn.Actions;
+    let appliedCount = 0;
+
+    // 자동 균등화를 적용할 패턴 ID 목록 (팝업 버튼만)
+    const autoApplyPatterns = [
+      'asymmetric-buttons',  // 비대칭 버튼 (팝업/모달)
+      'preselected-checkbox' // 사전 선택된 체크박스
+    ];
+
+    for (const result of results) {
+      const { patternId, element } = result;
+      if (!element) continue;
+
+      // 자동 적용 대상 패턴만 처리
+      if (!autoApplyPatterns.includes(patternId)) {
+        continue;
+      }
+
+      // Skip if already equalized
+      if (element.hasAttribute('data-lighton-equalized') ||
+        element.hasAttribute('data-lighton-neutralized')) {
+        continue;
+      }
+
+      // Get the first (primary) available action for this pattern
+      const availableActions = Actions.getAvailableActions(patternId);
+
+      // Prioritize equalize, then neutralize
+      let actionType = null;
+      if (availableActions.includes('equalize')) {
+        actionType = 'equalize';
+      } else if (availableActions.includes('uncheck')) {
+        actionType = 'uncheck';
+      }
+
+      if (actionType) {
+        const actionResult = Actions.executeAction(patternId, element, actionType);
+        if (actionResult) {
+          appliedCount++;
+          console.log(`[LightOn] Auto-applied "${actionType}" to pattern "${patternId}"`);
+        }
+      }
+    }
+
+    if (appliedCount > 0) {
+      console.log(`[LightOn] Auto-equalized ${appliedCount} dark patterns`);
+    }
   }
 
   /**
@@ -218,6 +281,50 @@
           }
         } else {
           sendResponse({ success: false, error: 'No elementId provided' });
+        }
+        break;
+
+      case 'EXECUTE_ACTION':
+        if (window.LightOn.Actions) {
+          const { patternId, elementIds, actionType } = message;
+          const results = [];
+
+          if (elementIds && elementIds.length > 0) {
+            elementIds.forEach(id => {
+              const element = document.querySelector(`[data-lighton-id="${id}"]`);
+              if (element) {
+                const result = window.LightOn.Actions.executeAction(patternId, element, actionType);
+                if (result) {
+                  results.push({ elementId: id, success: true, actionId: result.actionId });
+                } else {
+                  results.push({ elementId: id, success: false });
+                }
+              }
+            });
+          }
+
+          sendResponse({ success: true, results });
+        } else {
+          sendResponse({ success: false, error: 'Actions module not available' });
+        }
+        break;
+
+      case 'UNDO_ACTION':
+        if (window.LightOn.Actions) {
+          const { actionId } = message;
+          const success = window.LightOn.Actions.undoAction(actionId);
+          sendResponse({ success });
+        } else {
+          sendResponse({ success: false, error: 'Actions module not available' });
+        }
+        break;
+
+      case 'CLEAR_ALL_ACTIONS':
+        if (window.LightOn.Actions) {
+          window.LightOn.Actions.clearAll();
+          sendResponse({ success: true });
+        } else {
+          sendResponse({ success: false, error: 'Actions module not available' });
         }
         break;
 

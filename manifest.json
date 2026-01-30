@@ -30,6 +30,7 @@
         "scripts/patterns/interface.js",
         "scripts/patterns/sneaking.js",
         "scripts/detector.js",
+        "scripts/actions.js",
         "scripts/highlighter.js",
         "scripts/content.js"
       ],
