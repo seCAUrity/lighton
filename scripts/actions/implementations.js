@@ -1,20 +1,19 @@
 /**
- * LightOn Actions
+ * LightOn Action Implementations
  *
- * Handles remediation actions for detected dark patterns.
- * Each action attempts to neutralize or correct a dark pattern.
+ * Pure implementation functions for each action type.
+ * Each function takes an element and returns an action result with restore function.
  */
 
 window.LightOn = window.LightOn || {};
 
-window.LightOn.Actions = (function () {
+window.LightOn.ActionImplementations = (function() {
   'use strict';
-
-  // Track applied actions for undo functionality
-  const appliedActions = new Map();
 
   /**
    * Get localized action labels
+   * @param {string} lang - Language code ('ko' or 'en')
+   * @returns {Object} Label mappings
    */
   function getActionLabels(lang = 'ko') {
     const labels = {
@@ -58,13 +57,14 @@ window.LightOn.Actions = (function () {
 
   /**
    * Action: Uncheck preselected checkboxes
+   * @param {HTMLElement} element - Checkbox element
+   * @returns {Object|null} Action result with restore function
    */
   function uncheckCheckbox(element) {
     if (element.tagName === 'INPUT' && element.type === 'checkbox') {
       const originalState = element.checked;
       element.checked = false;
 
-      // Store for undo
       return {
         type: 'uncheck',
         element,
@@ -78,6 +78,8 @@ window.LightOn.Actions = (function () {
 
   /**
    * Action: Neutralize visual hierarchy (remove prominent styling)
+   * @param {HTMLElement} element - Target element
+   * @returns {Object|null} Action result with restore function
    */
   function neutralizeHierarchy(element) {
     const originalStyles = {
@@ -138,7 +140,8 @@ window.LightOn.Actions = (function () {
   /**
    * Action: Equalize visual hierarchy with siblings
    * Makes the emphasized element look identical to its siblings
-   * 잘못된 계층구조 다크패턴을 균등화하는 핵심 기능
+   * @param {HTMLElement} element - Target element
+   * @returns {Object|null} Action result with restore function
    */
   function equalizeVisualHierarchy(element) {
     // Find siblings in the same container
@@ -176,11 +179,6 @@ window.LightOn.Actions = (function () {
 
     // Calculate average styles from siblings
     const siblingStyles = siblings.map(sib => window.getComputedStyle(sib));
-
-    // Get average border width
-    const avgBorderWidth = siblingStyles.reduce((sum, s) => {
-      return sum + (parseFloat(s.borderWidth) || 0);
-    }, 0) / siblingStyles.length;
 
     // Get first sibling's styles as reference (most common case)
     const refStyle = siblingStyles[0];
@@ -231,7 +229,6 @@ window.LightOn.Actions = (function () {
     const absoluteChildren = element.querySelectorAll('[style*="position: absolute"], [style*="position:absolute"]');
     const absoluteOriginalStyles = [];
     absoluteChildren.forEach(child => {
-      const childStyle = window.getComputedStyle(child);
       // Check if it looks like a badge (small, positioned at top/corner)
       const rect = child.getBoundingClientRect();
       const parentRect = element.getBoundingClientRect();
@@ -279,8 +276,9 @@ window.LightOn.Actions = (function () {
 
   /**
    * Action: Equalize button sizes and colors
-   * 비대칭 버튼/링크를 균등한 시각적 비중으로 조정
-   * 폰트 유지, 대비 색상 적용, 크기 균등화
+   * Makes asymmetric buttons have equal visual weight
+   * @param {HTMLElement} element - Button or container element
+   * @returns {Object|null} Action result with restore function
    */
   function equalizeButtons(element) {
     // Find the modal/dialog container
@@ -325,7 +323,7 @@ window.LightOn.Actions = (function () {
       fontSize: parseFloat(window.getComputedStyle(btn).fontSize)
     }));
 
-    // Use MAXIMUM size so all buttons match the largest one (아래 버튼을 위 크기에 맞춤)
+    // Use MAXIMUM size so all buttons match the largest one
     const maxWidth = Math.max(...sizes.map(s => s.width));
     const maxHeight = Math.max(...sizes.map(s => s.height));
     const maxFontSize = Math.max(...sizes.map(s => s.fontSize));
@@ -353,26 +351,18 @@ window.LightOn.Actions = (function () {
 
     // Apply equalized styles with alternating colors for distinction
     buttons.forEach((btn, index) => {
-      // Save the text content for reference
-      const text = btn.textContent?.trim().toLowerCase() || '';
-
-      // Determine if this is a "positive" or "negative" action
-      const isNegative = /아니|no|cancel|취소|거절|닫기|나가|떠나|close|skip|나중/i.test(text);
-      const isPositive = /예|yes|확인|동의|계속|진행|시작|ok|agree|continue|stay|둘러/i.test(text);
-
       // Apply base equalized styles
       Object.assign(btn.style, equalizedStyle);
 
       // Apply color scheme - both options should be equally visible
-      // 원래 보라색 톤 유지 + 조화로운 색상
       if (index % 2 === 0) {
         // Primary style - original purple solid
-        btn.style.backgroundColor = '#6366F1';  // 원래 보라색
+        btn.style.backgroundColor = '#6366F1';
         btn.style.color = '#FFFFFF';
         btn.style.border = '2px solid #6366F1';
       } else {
-        // Secondary style - complementary teal (청록색)
-        btn.style.backgroundColor = '#0D9488';  // 청록색 (보라색과 조화)
+        // Secondary style - complementary teal
+        btn.style.backgroundColor = '#0D9488';
         btn.style.color = '#FFFFFF';
         btn.style.border = '2px solid #0D9488';
       }
@@ -429,6 +419,8 @@ window.LightOn.Actions = (function () {
 
   /**
    * Action: Emphasize hidden elements (increase visibility)
+   * @param {HTMLElement} element - Target element
+   * @returns {Object|null} Action result with restore function
    */
   function emphasizeHidden(element) {
     const originalStyles = {
@@ -461,6 +453,8 @@ window.LightOn.Actions = (function () {
 
   /**
    * Action: Enlarge small text
+   * @param {HTMLElement} element - Target element
+   * @returns {Object|null} Action result with restore function
    */
   function enlargeText(element) {
     const originalFontSize = element.style.fontSize;
@@ -482,6 +476,8 @@ window.LightOn.Actions = (function () {
 
   /**
    * Action: Hide element
+   * @param {HTMLElement} element - Target element
+   * @returns {Object|null} Action result with restore function
    */
   function hideElement(element) {
     const originalDisplay = element.style.display;
@@ -498,143 +494,15 @@ window.LightOn.Actions = (function () {
     };
   }
 
-  /**
-   * Execute an action based on pattern ID
-   */
-  function executeAction(patternId, element, actionType) {
-    if (!element) return null;
-
-    let result = null;
-
-    // Pattern-specific actions
-    switch (patternId) {
-      case 'preselected-checkbox':
-        if (actionType === 'uncheck') {
-          result = uncheckCheckbox(element);
-        }
-        break;
-
-      case 'visual-hierarchy-manipulation':
-        if (actionType === 'equalize') {
-          result = equalizeVisualHierarchy(element);
-        } else if (actionType === 'neutralize') {
-          result = neutralizeHierarchy(element);
-        } else if (actionType === 'hide') {
-          result = hideElement(element);
-        }
-        break;
-
-      case 'asymmetric-buttons':
-        if (actionType === 'equalize') {
-          result = equalizeButtons(element);
-        }
-        break;
-
-      case 'hidden-cancel':
-        if (actionType === 'emphasize') {
-          result = emphasizeHidden(element);
-        }
-        break;
-
-      case 'small-print':
-        if (actionType === 'enlarge') {
-          result = enlargeText(element);
-        }
-        break;
-
-      case 'hidden-cost':
-        if (actionType === 'emphasize') {
-          result = emphasizeHidden(element);
-        }
-        break;
-
-      case 'emotional-manipulation':
-        if (actionType === 'hide') {
-          result = hideElement(element);
-        }
-        break;
-
-      default:
-        // Generic hide action
-        if (actionType === 'hide') {
-          result = hideElement(element);
-        }
-    }
-
-    // Store action for undo
-    if (result) {
-      const actionId = `${patternId}-${Date.now()}`;
-      appliedActions.set(actionId, result);
-      result.actionId = actionId;
-    }
-
-    return result;
-  }
-
-  /**
-   * Undo an action
-   */
-  function undoAction(actionId) {
-    const action = appliedActions.get(actionId);
-    if (action && action.restore) {
-      action.restore();
-      appliedActions.delete(actionId);
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Get available actions for a pattern
-   */
-  function getAvailableActions(patternId) {
-    const actionMap = {
-      'preselected-checkbox': ['uncheck'],
-      'visual-hierarchy-manipulation': ['equalize', 'neutralize', 'hide'],
-      'asymmetric-buttons': ['equalize'],
-      'hidden-cancel': ['emphasize'],
-      'small-print': ['enlarge'],
-      'hidden-cost': ['emphasize'],
-      'emotional-manipulation': ['hide'],
-      'ambiguous-button': ['emphasize']
-    };
-
-    return actionMap[patternId] || ['hide'];
-  }
-
-  /**
-   * Apply action to all instances of a pattern
-   */
-  function applyToAll(patternId, elements, actionType) {
-    const results = [];
-    for (const element of elements) {
-      const result = executeAction(patternId, element, actionType);
-      if (result) {
-        results.push(result);
-      }
-    }
-    return results;
-  }
-
-  /**
-   * Clear all applied actions
-   */
-  function clearAll() {
-    appliedActions.forEach(action => {
-      if (action.restore) {
-        action.restore();
-      }
-    });
-    appliedActions.clear();
-  }
-
   // Public API
   return {
-    executeAction,
-    undoAction,
-    getAvailableActions,
-    applyToAll,
-    clearAll,
-    getActionLabels
+    getActionLabels,
+    uncheckCheckbox,
+    neutralizeHierarchy,
+    equalizeVisualHierarchy,
+    equalizeButtons,
+    emphasizeHidden,
+    enlargeText,
+    hideElement
   };
 })();
