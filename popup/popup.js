@@ -38,79 +38,43 @@
     secessionRetry: document.getElementById('secessionRetry')
   };
 
-  // Localization strings
+  // Localization strings (Korean only)
   const i18n = {
-    ko: {
-      popupSubtitle: '다크패턴 탐지기',
-      detectedCount: '탐지된 패턴',
-      severityHigh: '높음',
-      severityMedium: '중간',
-      severityLow: '낮음',
-      noPatterns: '이 페이지에서 다크패턴이 발견되지 않았습니다.',
-      scanning: '검사 중...',
-      patternsFound: '개의 패턴이 발견되었습니다',
-      disabled: 'LightOn이 비활성화되어 있습니다.',
-      rescan: '다시 검사',
-      categories: {
-        interface: '인터페이스 조작',
-        sneaking: '규정의 숨김',
-        obstruction: '경로의 방해',
-        nagging: '반복적 간섭',
-        social: '사회적 증거 조작',
-        forced: '행동의 강요'
-      },
-      // Secession info
-      secessionTitle: '계정 탈퇴 정보',
-      secessionLoadingText: '정보 조회 중...',
-      secessionNotFound: '이 사이트의 탈퇴 정보를 찾을 수 없습니다.',
-      secessionError: '정보를 불러올 수 없습니다.',
-      secessionViewGuide: '탈퇴 가이드 보기',
-      secessionSeeGuide: '자세한 정보는 가이드를 참조하세요.',
-      secessionDifficultyEasy: '쉬움',
-      secessionDifficultyMedium: '중간',
-      secessionDifficultyHard: '어려움',
-      secessionDifficultyLimited: '제한적',
-      secessionDifficultyImpossible: '불가능',
-      retry: '다시 시도'
+    popupSubtitle: '다크패턴 탐지기',
+    detectedCount: '탐지된 패턴',
+    severityHigh: '높음',
+    severityMedium: '중간',
+    severityLow: '낮음',
+    noPatterns: '이 페이지에서 다크패턴이 발견되지 않았습니다.',
+    scanning: '검사 중...',
+    patternsFound: '개의 패턴이 발견되었습니다',
+    disabled: 'LightOn이 비활성화되어 있습니다.',
+    rescan: '다시 검사',
+    categories: {
+      interface: '인터페이스 조작',
+      sneaking: '규정의 숨김',
+      obstruction: '경로의 방해',
+      nagging: '반복적 간섭',
+      social: '사회적 증거 조작',
+      forced: '행동의 강요'
     },
-    en: {
-      popupSubtitle: 'Dark Pattern Detector',
-      detectedCount: 'Detected Patterns',
-      severityHigh: 'High',
-      severityMedium: 'Medium',
-      severityLow: 'Low',
-      noPatterns: 'No dark patterns detected on this page.',
-      scanning: 'Scanning...',
-      patternsFound: 'patterns found',
-      disabled: 'LightOn is disabled.',
-      rescan: 'Rescan',
-      categories: {
-        interface: 'Interface Interference',
-        sneaking: 'Sneaking',
-        obstruction: 'Obstruction',
-        nagging: 'Nagging',
-        social: 'Social Proof',
-        forced: 'Forced Action'
-      },
-      // Secession info
-      secessionTitle: 'Account Deletion',
-      secessionLoadingText: 'Loading...',
-      secessionNotFound: 'No deletion info available for this site.',
-      secessionError: 'Unable to load information.',
-      secessionViewGuide: 'View Deletion Guide',
-      secessionSeeGuide: '자세한 정보는 가이드를 참조하세요.',
-      secessionDifficultyEasy: 'Easy',
-      secessionDifficultyMedium: 'Medium',
-      secessionDifficultyHard: 'Hard',
-      secessionDifficultyLimited: 'Limited',
-      secessionDifficultyImpossible: 'Impossible',
-      retry: 'Retry'
-    }
+    // Secession info
+    secessionTitle: '계정 탈퇴 정보',
+    secessionLoadingText: '정보 조회 중...',
+    secessionNotFound: '이 사이트의 탈퇴 정보를 찾을 수 없습니다.',
+    secessionError: '정보를 불러올 수 없습니다.',
+    secessionViewGuide: '탈퇴 가이드 보기',
+    secessionSeeGuide: '자세한 정보는 가이드를 참조하세요.',
+    secessionDifficultyEasy: '쉬움',
+    secessionDifficultyMedium: '중간',
+    secessionDifficultyHard: '어려움',
+    secessionDifficultyLimited: '제한적',
+    secessionDifficultyImpossible: '불가능',
+    retry: '다시 시도'
   };
 
-  // Current language
-  const lang = navigator.language?.startsWith('ko') ? 'ko' : 'en';
-  const t = i18n[lang];
+  // Use i18n directly (Korean only)
+  const t = i18n;
 
   /**
    * Get the active tab
@@ -243,7 +207,7 @@
       li.setAttribute('data-pattern-id', pattern.patternId);
       li.setAttribute('data-element-ids', JSON.stringify(pattern.elements));
       li.style.cursor = 'pointer';
-      li.title = lang === 'ko' ? '클릭하여 해당 위치로 이동' : 'Click to navigate to this pattern';
+      li.title = '클릭하여 해당 위치로 이동';
 
       const icon = document.createElement('span');
       icon.className = 'popup__list-icon';
@@ -395,7 +359,7 @@
     return new Promise((resolve) => {
       chrome.runtime.sendMessage({
         type: 'GET_SECESSION_INFO',
-        data: { url: url, lang: lang }
+        data: { url: url, lang: 'ko' }
       }, (response) => {
         if (chrome.runtime.lastError) {
           console.warn('[LightOn Popup] Secession info error:', chrome.runtime.lastError);
@@ -475,8 +439,8 @@
       icon.textContent = difficultyIcons[data.difficulty] || '📋';
     }
 
-    // 설명
-    elements.secessionNotes.textContent = data.notes || t.secessionSeeGuide;
+    // 설명 - 항상 고정 메시지 사용 (API의 data.notes는 무시)
+    elements.secessionNotes.textContent = t.secessionSeeGuide;
 
     // 액션 링크
     elements.secessionAction.href = data.url;
@@ -546,9 +510,7 @@
     } else {
       // Content script not available (might be a chrome:// page)
       elements.statusIcon.textContent = '❌';
-      elements.statusText.textContent = lang === 'ko'
-        ? '이 페이지에서는 사용할 수 없습니다.'
-        : 'Not available on this page.';
+      elements.statusText.textContent = '이 페이지에서는 사용할 수 없습니다.';
       elements.resultsSection.style.display = 'none';
     }
 
