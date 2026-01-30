@@ -1,7 +1,7 @@
 # LightOn - Dark Pattern Detector
 
 <p align="center">
-  <img src="lighton.png" alt="LightOn Banner" width="100%">
+  <img src="https://raw.githubusercontent.com/seCAUrity/lighton/main/lighton.png" alt="LightOn Banner" width="100%">
 </p>
 
 <p align="center">
