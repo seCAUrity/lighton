@@ -32,6 +32,7 @@
             /포기하시겠|놓치시겠|아쉽지만|후회하실|혜택.*받지|특별.*기회.*잃/i,
             /정말.*떠나|진심으로.*원치|그래도.*나가|할인.*포기/i,
             /안.*받으실|안.*원하시|싫으시|관심.*없으시/i,
+            /혜택.*포기|혜택.*싫|할인.*싫|싫어(요)?|싫습니다/i,
             // English patterns
             /no,?\s*(thanks|i('ll)?\s*(pass|skip|don't|rather)|i'm\s*good)/i,
             /miss\s*out|give\s*up|regret|lose.*benefit/i,
