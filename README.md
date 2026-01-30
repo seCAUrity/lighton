@@ -5,21 +5,50 @@
 </p>
 
 <p align="center">
-  <strong>웹사이트의 다크패턴을 탐지하고 하이라이팅하여 사용자를 보호합니다.</strong><br>
-  <em>Detects and highlights dark patterns on websites to protect users.</em>
+  <strong>디지털 소외계층을 위해 다크패턴을 밝혀주는 서비스</strong><br>
+  <em>Illuminating dark patterns for digitally vulnerable users</em>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/version-1.0.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/manifest-v3-green" alt="Manifest V3">
-  <img src="https://img.shields.io/badge/license-MIT-yellow" alt="License">
 </p>
 
 ---
 
-## What is a Dark Pattern?
+## Why LightOn?
 
-**다크패턴(Dark Pattern)** 은 사용자를 속이거나 의도치 않은 행동을 유도하는 UI/UX 디자인 패턴입니다. LightOn은 이러한 패턴을 자동으로 탐지하여 사용자에게 알려줍니다.
+작은 글씨, 복잡한 UI, 화려한 가격 효과, 당장 구매하지 않으면 손해를 보게 만드는 후킹 멘트들...
+
+이러한 구조를 **다크패턴**이라고 합니다.
+
+> **다크패턴이란?**
+>
+> 이용자의 선택을 왜곡하거나 중요한 정보를 숨기는 등 **이용자를 기만할 목적으로 설계된 UI 또는 UX**를 의미합니다.
+>
+> — 공정거래위원회
+
+다크패턴은 **기술적 취약점이 아닌 인간의 인지적 취약점**을 악용하는 공격입니다. GDPR이나 개인정보보호법이 요구하는 명시적 동의 원칙을 우회하는 심각한 보안 위협이기도 합니다.
+
+### 디지털 소외계층의 문제
+
+고령층의 디지털 이용률은 점점 늘어나고 있지만, **시각 저하**, **인지 처리 속도의 저하**, **디지털 경험 부족**이라는 고질적인 문제는 다크패턴에 특히 취약할 수밖에 없습니다.
+
+그러나 국내에는 이러한 사용자들이 이용할 수 있는 다크패턴 탐지 서비스가 없었습니다.
+
+---
+
+## What is LightOn?
+
+**LightOn**은 웹 서비스의 다크패턴을 **탐지**하여 사용자에게 **경고**하고, UI 재구성을 통해 다크패턴을 **완화**하는 Chrome Extension입니다.
+
+### 심플하면서도 효과적
+
+LightOn의 작업은 단순합니다:
+
+1. **탐지** - 다크패턴을 자동으로 찾아냅니다
+2. **수정** - 사전 선택된 체크박스 해제 등 UI를 교정합니다
+3. **설명** - 어떤 다크패턴인지 쉽게 알려줍니다
 
 ---
 
@@ -96,78 +125,11 @@
 
 ---
 
-## Project Structure
-
-```
-lighton/
-├── manifest.json           # Extension 설정 (Manifest V3)
-├── scripts/
-│   ├── background.js       # Service Worker
-│   ├── content.js          # Content Script (진입점)
-│   ├── detector.js         # 패턴 탐지 엔진
-│   ├── highlighter.js      # 하이라이팅 렌더러
-│   ├── patterns/           # 패턴 정의 (탐지 규칙)
-│   │   ├── registry.js     # 패턴 레지스트리
-│   │   ├── interface.js    # 인터페이스 조작 패턴
-│   │   └── sneaking.js     # 규정의 숨김 패턴
-│   └── actions/            # 액션 로직 (수정/교정)
-│       ├── registry.js     # 액션 설정 레지스트리
-│       ├── implementations.js  # 순수 액션 함수
-│       └── executor.js     # 액션 실행기 + undo
-├── popup/                  # 팝업 UI
-│   ├── popup.html
-│   ├── popup.css
-│   └── popup.js
-├── styles/
-│   └── highlight.css       # 하이라이팅 스타일
-├── _locales/               # 다국어 지원
-│   ├── ko/messages.json
-│   └── en/messages.json
-├── icons/                  # 확장 프로그램 아이콘
-└── test/                   # 테스트 페이지
-```
-
----
-
 ## Tech Stack
 
 - **Vanilla JavaScript** (ES6+) - 외부 의존성 없음
 - **Chrome Extension Manifest V3**
 - **CSS3** with CSS Variables
-
----
-
-## Contributing
-
-기여를 환영합니다! 새로운 다크패턴 추가, 버그 수정, 기능 개선 등 모든 기여가 도움이 됩니다.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Adding New Patterns
-
-새로운 다크패턴을 추가하려면 두 파일을 수정해야 합니다:
-
-1. **패턴 정의** (`scripts/patterns/*.js`)
-2. **액션 설정** (`scripts/actions/registry.js`)
-
-자세한 내용은 [CLAUDE.md](CLAUDE.md)를 참조하세요.
-
----
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## Acknowledgments
-
-- 다크패턴 분류 체계: [Dark Patterns Tip Line](https://darkpatternstipline.org/)
-- 영감: [Deceptive Design](https://www.deceptive.design/)
 
 ---
 
