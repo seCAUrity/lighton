@@ -66,7 +66,7 @@
         {
           type: DETECTOR_TYPES.SELECTOR,
           selectors: [
-            'input[type="checkbox"][checked]',
+            // :checked captures both HTML [checked] attribute and dynamic state
             'input[type="checkbox"]:checked'
           ],
           nearbyTextPatterns: [

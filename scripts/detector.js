@@ -907,8 +907,9 @@ window.LightOn.Detector = (function () {
   }
 
   /**
-   * Remove duplicate detections where parent and child both match the same pattern
-   * Keeps the most specific (smallest/deepest) element
+   * Remove duplicate detections where:
+   * 1. Same element matched by multiple selectors/detectors for the same pattern
+   * 2. Parent and child both match the same pattern (keeps the most specific element)
    */
   function deduplicateResults(results) {
     // Group results by pattern ID
@@ -924,18 +925,29 @@ window.LightOn.Detector = (function () {
     const deduplicated = [];
 
     for (const [patternId, patternResults] of byPattern) {
-      if (patternResults.length === 1) {
-        deduplicated.push(patternResults[0]);
+      // Step 1: Remove same-element duplicates using Set
+      const seenElements = new Set();
+      const uniqueResults = [];
+
+      for (const result of patternResults) {
+        if (!seenElements.has(result.element)) {
+          seenElements.add(result.element);
+          uniqueResults.push(result);
+        }
+      }
+
+      if (uniqueResults.length === 1) {
+        deduplicated.push(uniqueResults[0]);
         continue;
       }
 
-      // For each result, check if any other result's element is its ancestor
+      // Step 2: For each result, check if any other result's element is its ancestor
       const toKeep = [];
 
-      for (const result of patternResults) {
+      for (const result of uniqueResults) {
         let hasDescendantMatch = false;
 
-        for (const other of patternResults) {
+        for (const other of uniqueResults) {
           if (other === result) continue;
 
           // Check if 'other' element is a descendant of 'result' element

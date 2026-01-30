@@ -260,7 +260,11 @@
       currentNavIndex[patternId] = (currentNavIndex[patternId] + 1) % elementIds.length;
     }
 
-    const elementId = elementIds[currentNavIndex[patternId]];
+    const currentIndex = currentNavIndex[patternId];
+    const elementId = elementIds[currentIndex];
+
+    // Update UI to show current position
+    updateActiveItem(patternId, currentIndex, elementIds.length);
 
     // Send message to content script to scroll to element
     await sendToContent({
@@ -268,10 +272,39 @@
       elementId: elementId
     });
 
-    // Close popup after short delay to show the element
-    setTimeout(() => {
-      window.close();
-    }, 300);
+    // 팝업을 닫지 않음 - Ctrl+F 스타일 연속 탐색 지원
+  }
+
+  /**
+   * Update active item styling and navigation counter
+   */
+  function updateActiveItem(patternId, currentIndex, total) {
+    // 모든 항목에서 active 클래스 제거
+    document.querySelectorAll('.popup__list-item').forEach(item => {
+      item.classList.remove('popup__list-item--active');
+    });
+
+    // 현재 항목에 active 클래스 추가
+    const activeItem = document.querySelector(`[data-pattern-id="${patternId}"]`);
+    if (activeItem) {
+      activeItem.classList.add('popup__list-item--active');
+
+      // 카운터 업데이트 (2개 이상일 때만 표시)
+      let counter = activeItem.querySelector('.popup__nav-counter');
+      if (total > 1) {
+        if (!counter) {
+          counter = document.createElement('span');
+          counter.className = 'popup__nav-counter';
+          const countContainer = activeItem.querySelector('.popup__list-count-container');
+          if (countContainer) {
+            countContainer.insertBefore(counter, countContainer.firstChild);
+          }
+        }
+        counter.textContent = `${currentIndex + 1}/${total}`;
+      } else if (counter) {
+        counter.remove();
+      }
+    }
   }
 
   /**

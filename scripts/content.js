@@ -1,4 +1,4 @@
-/**
+﻿/**
  * LightOn Content Script
  *
  * Entry point for the extension's content script.
@@ -39,9 +39,162 @@
     rescanOnMutation: true    // Whether to rescan on DOM changes
   };
 
-  /**
-   * Get the current UI language
-   */
+  // Readability fix configuration
+  const readabilityFix = {
+    fontSize: 18,
+    lineHeight: 1.6,
+    contrastThreshold: 4.5,
+    minOpacity: 0.7
+  };
+
+  
+  function elementText(el) {
+    if (!el) return '';
+    const aria = el.getAttribute?.('aria-label') || '';
+    const title = el.getAttribute?.('title') || '';
+    const text = el.innerText || el.textContent || '';
+    return [aria, title, text].filter(Boolean).join(' ').trim();
+  }
+  function isInLightOnUI(el) {
+    return !!el.closest('.lighton-tooltip, .lighton-dot, .lighton-indicator, .lighton-focus-overlay');
+  }
+
+  function shouldApplyReadabilityFix(patternId) {
+    const targets = new Set([
+      'hidden-cancel',
+      'small-print',
+      'hidden-cost',
+      'asymmetric-buttons'
+    ]);
+    return targets.has(patternId);
+  }
+
+  function applyReadabilityFixes(results) {
+    clearReadabilityFixes();
+
+    document.documentElement.style.setProperty('--lighton-fix-font-size', `${readabilityFix.fontSize}px`);
+    document.documentElement.style.setProperty('--lighton-fix-line-height', `${readabilityFix.lineHeight}`);
+
+    results.forEach(result => {
+      if (!result || !result.element) return;
+      const el = result.element;
+      if (el.closest('[data-lighton-ignore]') || isInLightOnUI(el)) return;
+
+      const isEligible = el.matches?.('a,button,span,p,small,label,li,em,strong,b,i,u,[role="button"],input,textarea');
+      const text = elementText(el);
+      if (!text || (!isEligible && !shouldApplyReadabilityFix(result.patternId))) return;
+
+      const style = window.getComputedStyle(el);
+      const fontPx = parseFloat(style.fontSize) || 16;
+      const shouldFixText = fontPx < readabilityFix.fontSize;
+      if (fontPx < readabilityFix.fontSize) {
+        el.classList.add('lighton-fix-text');
+      }
+
+      const fg = parseColor(style.color);
+      const bg = getEffectiveBackground(el);
+      const ratio = contrastRatio(fg, bg);
+      const opacity = parseFloat(style.opacity) || 1;
+      const shouldFixContrast = ratio < readabilityFix.contrastThreshold || opacity < readabilityFix.minOpacity;
+      const shouldForce = shouldApplyReadabilityFix(result.patternId);
+
+      if ((shouldForce || shouldFixText || shouldFixContrast) && shouldFixContrast) {
+        if (!el.hasAttribute('data-lighton-fix-old-color')) {
+          el.setAttribute('data-lighton-fix-old-color', el.style.getPropertyValue('color') || '');
+          el.setAttribute('data-lighton-fix-old-priority', el.style.getPropertyPriority('color') || '');
+        }
+        const light = { r: 249, g: 250, b: 251, a: 1 };
+        const dark = { r: 15, g: 23, b: 42, a: 1 };
+        const lightRatio = contrastRatio(light, bg);
+        const darkRatio = contrastRatio(dark, bg);
+        const next = lightRatio >= darkRatio ? '#f9fafb' : '#0f172a';
+        el.style.setProperty('color', next, 'important');
+        el.classList.add('lighton-fix-contrast');
+      }
+    });
+  }
+
+  function clearReadabilityFixes() {
+    document.documentElement.style.removeProperty('--lighton-fix-font-size');
+    document.documentElement.style.removeProperty('--lighton-fix-line-height');
+
+    const fixed = document.querySelectorAll('.lighton-fix-text, .lighton-fix-contrast');
+    fixed.forEach(el => {
+      el.classList.remove('lighton-fix-text', 'lighton-fix-contrast');
+      if (el.hasAttribute('data-lighton-fix-old-color')) {
+        const prev = el.getAttribute('data-lighton-fix-old-color');
+        const priority = el.getAttribute('data-lighton-fix-old-priority') || '';
+        if (prev) {
+          el.style.setProperty('color', prev, priority);
+        } else {
+          el.style.removeProperty('color');
+        }
+        el.removeAttribute('data-lighton-fix-old-color');
+        el.removeAttribute('data-lighton-fix-old-priority');
+      }
+    });
+  }
+
+  function parseColor(input) {
+    if (!input) return null;
+    const s = input.trim().toLowerCase();
+    if (s === 'transparent') return { r: 0, g: 0, b: 0, a: 0 };
+    const rgba = s.match(/^rgba?\(([^)]+)\)$/);
+    if (rgba) {
+      const parts = rgba[1].split(',').map(p => p.trim());
+      const r = parseFloat(parts[0]);
+      const g = parseFloat(parts[1]);
+      const b = parseFloat(parts[2]);
+      const a = parts[3] !== undefined ? parseFloat(parts[3]) : 1;
+      return { r, g, b, a };
+    }
+    const hex = s.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+    if (hex) {
+      const h = hex[1];
+      if (h.length === 3) {
+        return {
+          r: parseInt(h[0] + h[0], 16),
+          g: parseInt(h[1] + h[1], 16),
+          b: parseInt(h[2] + h[2], 16),
+          a: 1
+        };
+      }
+      return {
+        r: parseInt(h.slice(0, 2), 16),
+        g: parseInt(h.slice(2, 4), 16),
+        b: parseInt(h.slice(4, 6), 16),
+        a: 1
+      };
+    }
+    return null;
+  }
+
+  function getEffectiveBackground(el) {
+    let node = el;
+    while (node && node.nodeType === 1) {
+      const style = window.getComputedStyle(node);
+      const bg = parseColor(style.backgroundColor);
+      if (bg && bg.a > 0.05) return bg;
+      node = node.parentElement;
+    }
+    return { r: 255, g: 255, b: 255, a: 1 };
+  }
+
+  function relativeLuminance(rgb) {
+    const channel = v => {
+      const s = v / 255;
+      return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+    };
+    return 0.2126 * channel(rgb.r) + 0.7152 * channel(rgb.g) + 0.0722 * channel(rgb.b);
+  }
+
+  function contrastRatio(fg, bg) {
+    if (!fg || !bg) return 1;
+    const l1 = relativeLuminance(fg) + 0.05;
+    const l2 = relativeLuminance(bg) + 0.05;
+    return l1 > l2 ? l1 / l2 : l2 / l1;
+  }
+
   function getCurrentLanguage() {
     const lang = navigator.language || navigator.userLanguage;
     return lang.startsWith('ko') ? 'ko' : 'en';
@@ -57,6 +210,7 @@
 
     // Clear existing highlights
     Highlighter.clearAll();
+    clearReadabilityFixes();
 
     // Scan for patterns
     currentResults = Detector.scan(document.body);
@@ -71,6 +225,9 @@
 
     // Apply highlights
     Highlighter.highlightAll(currentResults);
+
+    // Apply readability fixes for matched patterns
+    applyReadabilityFixes(currentResults);
 
     // AUTO-APPLY: Automatically equalize detected patterns
     autoApplyActions(currentResults);
@@ -243,6 +400,7 @@
         } else {
           Highlighter.clearAll();
           Highlighter.removeIndicator();
+          clearReadabilityFixes();
         }
         sendResponse({ success: true });
         break;
@@ -396,3 +554,5 @@
     }
   });
 })();
+
+
