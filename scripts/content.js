@@ -131,6 +131,73 @@
     });
   }
 
+  /**
+   * Preview original readability state for an element (before fix was applied)
+   * Used for hover preview - temporarily removes readability fixes
+   * @param {HTMLElement} element - Target element
+   * @returns {Object|null} State to restore later
+   */
+  function previewReadabilityFix(element) {
+    if (!element) return null;
+
+    const state = {
+      hadTextFix: element.classList.contains('lighton-fix-text'),
+      hadContrastFix: element.classList.contains('lighton-fix-contrast'),
+      oldColor: element.getAttribute('data-lighton-fix-old-color'),
+      oldPriority: element.getAttribute('data-lighton-fix-old-priority')
+    };
+
+    // 아무 fix도 적용되지 않았다면 null 반환
+    if (!state.hadTextFix && !state.hadContrastFix) return null;
+
+    // 임시로 readability fix 제거 (원래 상태 표시)
+    element.classList.remove('lighton-fix-text', 'lighton-fix-contrast');
+
+    // 원래 색상 복원
+    if (state.hadContrastFix && element.hasAttribute('data-lighton-fix-old-color')) {
+      const prev = state.oldColor || '';
+      const priority = state.oldPriority || '';
+      if (prev) {
+        element.style.setProperty('color', prev, priority);
+      } else {
+        element.style.removeProperty('color');
+      }
+    }
+
+    return state;
+  }
+
+  /**
+   * Restore readability fix after preview ends
+   * @param {HTMLElement} element - Target element
+   * @param {Object} state - State from previewReadabilityFix
+   */
+  function restoreReadabilityFix(element, state) {
+    if (!element || !state) return;
+
+    // 클래스 복원
+    if (state.hadTextFix) {
+      element.classList.add('lighton-fix-text');
+    }
+
+    if (state.hadContrastFix) {
+      element.classList.add('lighton-fix-contrast');
+      // 수정된 색상 다시 적용 (원래 색상 데이터 유지)
+      const style = window.getComputedStyle(element);
+      const bg = getEffectiveBackground(element);
+      const light = { r: 249, g: 250, b: 251, a: 1 };
+      const dark = { r: 15, g: 23, b: 42, a: 1 };
+      const lightRatio = contrastRatio(light, bg);
+      const darkRatio = contrastRatio(dark, bg);
+      const next = lightRatio >= darkRatio ? '#f9fafb' : '#0f172a';
+      element.style.setProperty('color', next, 'important');
+    }
+  }
+
+  // Expose readability preview functions to window.LightOn for executor access
+  window.LightOn.previewReadabilityFix = previewReadabilityFix;
+  window.LightOn.restoreReadabilityFix = restoreReadabilityFix;
+
   function parseColor(input) {
     if (!input) return null;
     const s = input.trim().toLowerCase();
@@ -306,6 +373,9 @@
 
     mutationObserver = new MutationObserver((mutations) => {
       if (!config.rescanOnMutation || !isEnabled) return;
+
+      // Preview 중에는 재스캔 하지 않음 (hover 시 DOM 변경으로 인한 스캔 방지)
+      if (window.LightOn.Actions?.isPreviewing()) return;
 
       // Check if mutations are significant enough to warrant a rescan
       let shouldRescan = false;

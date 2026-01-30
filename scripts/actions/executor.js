@@ -15,6 +15,7 @@ window.LightOn.Actions = (function() {
 
   // Track previewing state
   let previewingActionId = null;
+  let previewingReadabilityState = null;
 
   // Get dependencies
   function getRegistry() {
@@ -113,6 +114,12 @@ window.LightOn.Actions = (function() {
       // Temporarily restore original state
       action.restore();
       previewingActionId = actionId;
+
+      // Readability fix도 preview (원래 상태 표시)
+      if (window.LightOn.previewReadabilityFix && action.element) {
+        previewingReadabilityState = window.LightOn.previewReadabilityFix(action.element);
+      }
+
       return true;
     }
     return false;
@@ -128,11 +135,18 @@ window.LightOn.Actions = (function() {
     const action = appliedActions.get(previewingActionId);
     if (!action) {
       previewingActionId = null;
+      previewingReadabilityState = null;
       return false;
     }
 
     const { patternId, element, actionType } = action;
     previewingActionId = null;
+
+    // Readability fix 복원
+    if (window.LightOn.restoreReadabilityFix && element && previewingReadabilityState) {
+      window.LightOn.restoreReadabilityFix(element, previewingReadabilityState);
+    }
+    previewingReadabilityState = null;
 
     // Re-apply the action (need to execute again)
     if (element && patternId && actionType) {
