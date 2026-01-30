@@ -9,7 +9,8 @@
   'use strict';
 
   // Wait for LightOn modules to be available
-  if (!window.LightOn || !window.LightOn.PatternRegistry || !window.LightOn.Detector || !window.LightOn.Highlighter) {
+  if (!window.LightOn || !window.LightOn.PatternRegistry || !window.LightOn.Detector ||
+      !window.LightOn.Highlighter || !window.LightOn.ActionRegistry || !window.LightOn.Actions) {
     console.warn('[LightOn] Modules not loaded yet, retrying...');
     setTimeout(() => {
       // Re-run this script
@@ -23,7 +24,7 @@
     return;
   }
 
-  const { PatternRegistry, Detector, Highlighter } = window.LightOn;
+  const { PatternRegistry, Detector, Highlighter, ActionRegistry } = window.LightOn;
 
   // Extension state
   let isEnabled = true;
@@ -60,13 +61,8 @@
   }
 
   function shouldApplyReadabilityFix(patternId) {
-    const targets = new Set([
-      'hidden-cancel',
-      'small-print',
-      'hidden-cost',
-      'asymmetric-buttons'
-    ]);
-    return targets.has(patternId);
+    // Use ActionRegistry for centralized configuration
+    return ActionRegistry.shouldApplyReadabilityFix(patternId);
   }
 
   function applyReadabilityFixes(results) {
@@ -248,26 +244,24 @@
    * NOTE: 요금제 카드(visual-hierarchy-manipulation)는 폰트 깨짐 방지를 위해 제외
    */
   function autoApplyActions(results) {
-    if (!window.LightOn.Actions) {
-      console.warn('[LightOn] Actions module not available for auto-apply');
-      return;
-    }
-
     const Actions = window.LightOn.Actions;
     let appliedCount = 0;
 
-    // 자동 균등화를 적용할 패턴 ID 목록 (팝업 버튼만)
-    const autoApplyPatterns = [
-      'asymmetric-buttons',  // 비대칭 버튼 (팝업/모달)
-      'preselected-checkbox' // 사전 선택된 체크박스
-    ];
+    // Get auto-apply patterns from centralized registry
+    const autoApplyPatterns = ActionRegistry.getAutoApplyPatterns();
+
+    // Create a map for quick lookup
+    const autoApplyMap = new Map(
+      autoApplyPatterns.map(p => [p.patternId, p.action])
+    );
 
     for (const result of results) {
       const { patternId, element } = result;
       if (!element) continue;
 
-      // 자동 적용 대상 패턴만 처리
-      if (!autoApplyPatterns.includes(patternId)) {
+      // Check if this pattern should be auto-applied
+      const autoAction = autoApplyMap.get(patternId);
+      if (!autoAction) {
         continue;
       }
 
@@ -277,23 +271,11 @@
         continue;
       }
 
-      // Get the first (primary) available action for this pattern
-      const availableActions = Actions.getAvailableActions(patternId);
-
-      // Prioritize equalize, then neutralize
-      let actionType = null;
-      if (availableActions.includes('equalize')) {
-        actionType = 'equalize';
-      } else if (availableActions.includes('uncheck')) {
-        actionType = 'uncheck';
-      }
-
-      if (actionType) {
-        const actionResult = Actions.executeAction(patternId, element, actionType);
-        if (actionResult) {
-          appliedCount++;
-          console.log(`[LightOn] Auto-applied "${actionType}" to pattern "${patternId}"`);
-        }
+      // Execute the configured auto-apply action
+      const actionResult = Actions.executeAction(patternId, element, autoAction);
+      if (actionResult) {
+        appliedCount++;
+        console.log(`[LightOn] Auto-applied "${autoAction}" to pattern "${patternId}"`);
       }
     }
 

@@ -29,8 +29,10 @@
         "scripts/patterns/registry.js",
         "scripts/patterns/interface.js",
         "scripts/patterns/sneaking.js",
+        "scripts/actions/registry.js",
+        "scripts/actions/implementations.js",
+        "scripts/actions/executor.js",
         "scripts/detector.js",
-        "scripts/actions.js",
         "scripts/highlighter.js",
         "scripts/content.js"
       ],
