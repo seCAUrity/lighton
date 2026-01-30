@@ -66,6 +66,63 @@
       <p class="popup__disabled-text">LightOn이 비활성화되어 있습니다.</p>
     </section>
 
+    <!-- Secession Info (Collapsible) -->
+    <section class="popup__secession" id="secessionSection" style="display: none;">
+      <div class="secession__trigger" id="secessionTrigger">
+        <div class="secession__trigger-left">
+          <span class="secession__icon">🚪</span>
+          <span class="secession__trigger-text" id="secessionTitleText">계정 탈퇴 정보</span>
+        </div>
+        <span class="secession__trigger-arrow" id="secessionArrow">▼</span>
+      </div>
+
+      <div class="secession__body" id="secessionBody" style="display: none;">
+        <!-- Loading State -->
+        <div class="secession__loading" id="secessionLoading" style="display: none;">
+          <div class="secession__spinner"></div>
+          <p id="secessionLoadingText">정보 조회 중...</p>
+        </div>
+
+        <!-- Content -->
+        <div class="secession__content" id="secessionContent" style="display: none;">
+          <div class="secession__service">
+            <strong id="secessionServiceName">Service</strong>
+          </div>
+
+          <div class="secession__difficulty-container">
+            <span class="secession__difficulty" id="secessionDifficulty">
+              <span class="secession__difficulty-icon">⚠️</span>
+              <span class="secession__difficulty-text">중간</span>
+            </span>
+          </div>
+
+          <p class="secession__notes" id="secessionNotes"></p>
+
+          <a href="#" class="secession__action" id="secessionAction" target="_blank" rel="noopener noreferrer">
+            <span id="secessionActionText">탈퇴 가이드 보기</span>
+            <span class="secession__action-arrow">→</span>
+          </a>
+        </div>
+
+        <!-- Not Found State -->
+        <div class="secession__not-found" id="secessionNotFound" style="display: none;">
+          <p class="secession__not-found-text" id="secessionNotFoundText">
+            이 사이트의 탈퇴 정보를 찾을 수 없습니다.
+          </p>
+        </div>
+
+        <!-- Error State -->
+        <div class="secession__error" id="secessionError" style="display: none;">
+          <p class="secession__error-text" id="secessionErrorText">
+            정보를 불러올 수 없습니다.
+          </p>
+          <button class="secession__retry" id="secessionRetry">
+            <span>🔄</span> <span id="secessionRetryText">다시 시도</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
     <!-- Footer -->
     <footer class="popup__footer">
       <button class="popup__rescan" id="rescanBtn" title="다시 검사">

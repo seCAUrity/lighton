@@ -20,7 +20,22 @@
     mediumCount: document.getElementById('mediumCount'),
     lowCount: document.getElementById('lowCount'),
     patternList: document.getElementById('patternList'),
-    rescanBtn: document.getElementById('rescanBtn')
+    rescanBtn: document.getElementById('rescanBtn'),
+    // Secession elements
+    secessionSection: document.getElementById('secessionSection'),
+    secessionTrigger: document.getElementById('secessionTrigger'),
+    secessionBody: document.getElementById('secessionBody'),
+    secessionArrow: document.getElementById('secessionArrow'),
+    secessionLoading: document.getElementById('secessionLoading'),
+    secessionContent: document.getElementById('secessionContent'),
+    secessionNotFound: document.getElementById('secessionNotFound'),
+    secessionError: document.getElementById('secessionError'),
+    secessionServiceName: document.getElementById('secessionServiceName'),
+    secessionDifficulty: document.getElementById('secessionDifficulty'),
+    secessionDifficultyText: document.querySelector('.secession__difficulty-text'),
+    secessionNotes: document.getElementById('secessionNotes'),
+    secessionAction: document.getElementById('secessionAction'),
+    secessionRetry: document.getElementById('secessionRetry')
   };
 
   // Localization strings
@@ -43,7 +58,19 @@
         nagging: '반복적 간섭',
         social: '사회적 증거 조작',
         forced: '행동의 강요'
-      }
+      },
+      // Secession info
+      secessionTitle: '계정 탈퇴 정보',
+      secessionLoadingText: '정보 조회 중...',
+      secessionNotFound: '이 사이트의 탈퇴 정보를 찾을 수 없습니다.',
+      secessionError: '정보를 불러올 수 없습니다.',
+      secessionViewGuide: '탈퇴 가이드 보기',
+      secessionDifficultyEasy: '쉬움',
+      secessionDifficultyMedium: '중간',
+      secessionDifficultyHard: '어려움',
+      secessionDifficultyLimited: '제한적',
+      secessionDifficultyImpossible: '불가능',
+      retry: '다시 시도'
     },
     en: {
       popupSubtitle: 'Dark Pattern Detector',
@@ -63,7 +90,19 @@
         nagging: 'Nagging',
         social: 'Social Proof',
         forced: 'Forced Action'
-      }
+      },
+      // Secession info
+      secessionTitle: 'Account Deletion',
+      secessionLoadingText: 'Loading...',
+      secessionNotFound: 'No deletion info available for this site.',
+      secessionError: 'Unable to load information.',
+      secessionViewGuide: 'View Deletion Guide',
+      secessionDifficultyEasy: 'Easy',
+      secessionDifficultyMedium: 'Medium',
+      secessionDifficultyHard: 'Hard',
+      secessionDifficultyLimited: 'Limited',
+      secessionDifficultyImpossible: 'Impossible',
+      retry: 'Retry'
     }
   };
 
@@ -303,6 +342,163 @@
     elements.emptySection.style.display = 'none';
   }
 
+  // =========================
+  // Secession Info Functions
+  // =========================
+
+  /**
+   * Capitalize first letter
+   */
+  function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  /**
+   * Request secession info from background script
+   */
+  async function requestSecessionInfo(url) {
+    return new Promise((resolve) => {
+      chrome.runtime.sendMessage({
+        type: 'GET_SECESSION_INFO',
+        data: { url: url, lang: lang }
+      }, (response) => {
+        if (chrome.runtime.lastError) {
+          console.warn('[LightOn Popup] Secession info error:', chrome.runtime.lastError);
+          resolve(null);
+        } else {
+          resolve(response);
+        }
+      });
+    });
+  }
+
+  /**
+   * Show secession loading state
+   */
+  function showSecessionLoading() {
+    if (!elements.secessionSection) return;
+
+    // Ensure section is visible but collapsed initially
+    elements.secessionSection.style.display = 'block';
+    
+    // Set loading state in body
+    elements.secessionLoading.style.display = 'flex';
+    elements.secessionContent.style.display = 'none';
+    elements.secessionNotFound.style.display = 'none';
+    elements.secessionError.style.display = 'none';
+  }
+
+  /**
+   * Display secession info in UI
+   */
+  function displaySecessionInfo(response) {
+    if (!response || !elements.secessionSection) return;
+
+    elements.secessionLoading.style.display = 'none';
+
+    if (!response.success) {
+      if (response.error === 'not_found') {
+        elements.secessionNotFound.style.display = 'block';
+        elements.secessionContent.style.display = 'none';
+        elements.secessionError.style.display = 'none';
+      } else if (response.error === 'invalid_domain') {
+        elements.secessionSection.style.display = 'none';
+        return;
+      } else {
+        elements.secessionError.style.display = 'block';
+        elements.secessionContent.style.display = 'none';
+        elements.secessionNotFound.style.display = 'none';
+      }
+      return;
+    }
+
+    const data = response.data;
+
+    elements.secessionContent.style.display = 'block';
+    elements.secessionNotFound.style.display = 'none';
+    elements.secessionError.style.display = 'none';
+
+    // 서비스 이름
+    elements.secessionServiceName.textContent = data.name;
+
+    // 난이도 배지
+    const difficultyKey = `secessionDifficulty${capitalize(data.difficulty)}`;
+    const difficultyText = t[difficultyKey] || data.difficulty;
+    elements.secessionDifficultyText.textContent = difficultyText;
+
+    elements.secessionDifficulty.className = `secession__difficulty secession__difficulty--${data.difficulty}`;
+
+    const difficultyIcons = {
+      easy: '✅',
+      medium: '⚠️',
+      hard: '❌',
+      limited: '⏱️',
+      impossible: '🚫'
+    };
+    const icon = elements.secessionDifficulty.querySelector('.secession__difficulty-icon');
+    if (icon) {
+      icon.textContent = difficultyIcons[data.difficulty] || '📋';
+    }
+
+    // 설명
+    elements.secessionNotes.textContent = data.notes || (lang === 'ko'
+      ? '자세한 정보는 가이드를 참조하세요.'
+      : 'See guide for more details.');
+
+    // 액션 링크
+    elements.secessionAction.href = data.url;
+    elements.secessionAction.style.display = data.url ? 'flex' : 'none';
+  }
+
+  /**
+   * Apply localization to secession section
+   */
+  function applyLocalization() {
+    // Secession section
+    if (document.getElementById('secessionTitleText')) {
+      document.getElementById('secessionTitleText').textContent = t.secessionTitle;
+    }
+    if (document.getElementById('secessionLoadingText')) {
+      document.getElementById('secessionLoadingText').textContent = t.secessionLoadingText;
+    }
+    if (document.getElementById('secessionNotFoundText')) {
+      document.getElementById('secessionNotFoundText').textContent = t.secessionNotFound;
+    }
+    if (document.getElementById('secessionErrorText')) {
+      document.getElementById('secessionErrorText').textContent = t.secessionError;
+    }
+    if (document.getElementById('secessionActionText')) {
+      document.getElementById('secessionActionText').textContent = t.secessionViewGuide;
+    }
+    if (document.getElementById('secessionRetryText')) {
+      document.getElementById('secessionRetryText').textContent = t.retry;
+    }
+
+    // Existing data-i18n
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      const key = el.getAttribute('data-i18n');
+      if (t[key]) {
+        el.textContent = t[key];
+      }
+    });
+  }
+  
+  /**
+   * Toggle secession section
+   */
+  if (elements.secessionTrigger) {
+    elements.secessionTrigger.addEventListener('click', () => {
+      const isHidden = elements.secessionBody.style.display === 'none';
+      elements.secessionBody.style.display = isHidden ? 'block' : 'none';
+      
+      if (isHidden) {
+        elements.secessionSection.classList.add('open');
+      } else {
+        elements.secessionSection.classList.remove('open');
+      }
+    });
+  }
+
   /**
    * Initialize popup
    */
@@ -322,6 +518,17 @@
         : 'Not available on this page.';
       elements.resultsSection.style.display = 'none';
     }
+
+    // Fetch secession info
+    const tab = await getActiveTab();
+    if (tab?.url) {
+      showSecessionLoading();
+      const secessionInfo = await requestSecessionInfo(tab.url);
+      displaySecessionInfo(secessionInfo);
+    }
+
+    // Apply localization
+    applyLocalization();
   }
 
   /**
@@ -367,13 +574,19 @@
     }
   });
 
-  // Apply localization
-  document.querySelectorAll('[data-i18n]').forEach((el) => {
-    const key = el.getAttribute('data-i18n');
-    if (t[key]) {
-      el.textContent = t[key];
-    }
-  });
+  /**
+   * Handle secession retry button
+   */
+  if (elements.secessionRetry) {
+    elements.secessionRetry.addEventListener('click', async () => {
+      const tab = await getActiveTab();
+      if (tab?.url) {
+        showSecessionLoading();
+        const secessionInfo = await requestSecessionInfo(tab.url);
+        displaySecessionInfo(secessionInfo);
+      }
+    });
+  }
 
   // Initialize on load
   initialize();

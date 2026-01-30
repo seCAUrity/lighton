@@ -7,6 +7,145 @@
 // Store scan results per tab
 const tabResults = new Map();
 
+// =========================
+// JustDeleteAccount.com API Integration
+// =========================
+
+// Session cache for secession info
+const secessionCache = new Map();
+const CACHE_TTL = 60 * 60 * 1000; // 1시간
+const MAX_CACHE_SIZE = 100;
+const API_BASE_URL = 'https://api.justdeleteaccount.com/v1';
+
+/**
+ * Rate Limiter for API requests (10 req/10s)
+ */
+class RateLimiter {
+  constructor(maxRequests = 10, windowMs = 10000) {
+    this.maxRequests = maxRequests;
+    this.windowMs = windowMs;
+    this.requests = [];
+  }
+
+  canMakeRequest() {
+    const now = Date.now();
+    this.requests = this.requests.filter(time => now - time < this.windowMs);
+    return this.requests.length < this.maxRequests;
+  }
+
+  recordRequest() {
+    this.requests.push(Date.now());
+  }
+
+  async waitForSlot() {
+    while (!this.canMakeRequest()) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+}
+
+const rateLimiter = new RateLimiter();
+
+/**
+ * Extract domain from URL
+ */
+function extractDomain(url) {
+  try {
+    const urlObj = new URL(url);
+
+    // chrome:// 등 내부 페이지는 스킵
+    if (urlObj.protocol === 'chrome:' || urlObj.protocol === 'chrome-extension:') {
+      return null;
+    }
+
+    // www. 제거
+    const hostname = urlObj.hostname.replace(/^www\./, '');
+    return hostname;
+  } catch (e) {
+    console.warn('[LightOn] Invalid URL:', url);
+    return null;
+  }
+}
+
+/**
+ * Fetch account deletion info from JustDeleteAccount.com API
+ */
+async function fetchSecessionInfo(domain, lang = 'en') {
+  const cacheKey = `${domain}_${lang}`;
+
+  // 캐시 확인
+  const cached = secessionCache.get(cacheKey);
+  if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
+    console.log(`[LightOn Secession] Cache hit for ${domain}`);
+    return { ...cached.data, cached: true };
+  }
+
+  // Rate Limit 대기
+  await rateLimiter.waitForSlot();
+
+  try {
+    const url = `${API_BASE_URL}/services/by-domain/${encodeURIComponent(domain)}?lang=${lang}&subdomains=exact`;
+    console.log(`[LightOn Secession] Fetching: ${url}`);
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' }
+    });
+
+    rateLimiter.recordRequest();
+
+    if (response.status === 404) {
+      const notFoundResult = {
+        success: false,
+        error: 'not_found',
+        message: 'No deletion info available'
+      };
+      secessionCache.set(cacheKey, { data: notFoundResult, timestamp: Date.now() });
+      return notFoundResult;
+    }
+
+    if (response.status === 429) {
+      return {
+        success: false,
+        error: 'rate_limited',
+        message: 'Rate limit exceeded'
+      };
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const jsonData = await response.json();
+
+    if (jsonData.success && jsonData.data) {
+      // LRU 캐시 크기 제한
+      if (secessionCache.size >= MAX_CACHE_SIZE) {
+        const firstKey = secessionCache.keys().next().value;
+        secessionCache.delete(firstKey);
+      }
+
+      secessionCache.set(cacheKey, { data: jsonData, timestamp: Date.now() });
+      console.log(`[LightOn Secession] Success for ${domain}`);
+      return { ...jsonData, cached: false };
+    }
+
+    return {
+      success: false,
+      error: 'invalid_response',
+      message: 'Invalid API response'
+    };
+
+  } catch (error) {
+    console.error('[LightOn Secession] API error:', error);
+    return {
+      success: false,
+      error: 'network_error',
+      message: error.message
+    };
+  }
+}
+
 /**
  * Update the extension badge for a tab
  */
@@ -57,6 +196,24 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse(null);
       }
       break;
+
+    case 'GET_SECESSION_INFO':
+      const { url, lang = 'en' } = message.data;
+      const domain = extractDomain(url);
+
+      if (!domain) {
+        sendResponse({
+          success: false,
+          error: 'invalid_domain',
+          message: 'Cannot extract domain from URL'
+        });
+        return true;
+      }
+
+      fetchSecessionInfo(domain, lang).then(result => {
+        sendResponse(result);
+      });
+      return true; // 비동기 응답
 
     default:
       sendResponse({ error: 'Unknown message type' });
