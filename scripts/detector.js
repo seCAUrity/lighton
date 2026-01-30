@@ -116,6 +116,32 @@ window.LightOn.Detector = (function () {
   }
 
   /**
+   * Check if element is visibly rendered
+   */
+  function isElementVisible(element) {
+    if (!element) return false;
+    const style = getComputedStyles(element);
+    if (!style) return false;
+    if (style.display === 'none' || style.visibility === 'hidden') return false;
+    const opacity = parseFloat(style.opacity || '1');
+    if (opacity < 0.05) return false;
+    const rect = element.getBoundingClientRect();
+    return rect.width > 1 && rect.height > 1;
+  }
+
+  /**
+   * Get readable text for intent matching
+   */
+  function getElementLabel(element) {
+    if (!element) return '';
+    const aria = element.getAttribute?.('aria-label') || '';
+    const title = element.getAttribute?.('title') || '';
+    const value = element.value || '';
+    const text = element.innerText || element.textContent || '';
+    return `${aria} ${title} ${value} ${text}`.replace(/\s+/g, ' ').trim();
+  }
+
+  /**
    * Check if element is near a price-related context
    */
   const priceContextSelectors = [
@@ -480,7 +506,7 @@ window.LightOn.Detector = (function () {
 
   /**
    * Calculate visual prominence score of an element compared to its siblings
-   * Used to detect visual hierarchy manipulation (잘못된 계층구조)
+   * Used to detect visual hierarchy manipulation (불필요한 강조)
    */
   function calculateVisualProminence(element, siblings) {
     const style = getComputedStyles(element);
@@ -721,7 +747,7 @@ window.LightOn.Detector = (function () {
   /**
    * Process asymmetric buttons detector
    * Finds button pairs in modals/dialogs where one is visually emphasized over another
-   * 비대칭 버튼 다크패턴 탐지
+   * 불필요한 강조(버튼 간 비대칭) 다크패턴 탐지
    */
   function processAsymmetricButtonsDetector(detector, rootElement) {
     const matches = [];
@@ -730,16 +756,9 @@ window.LightOn.Detector = (function () {
     const modalSelectors = [
       // Modals and dialogs
       '[role="dialog"]', '[role="alertdialog"]',
+      '[aria-modal="true"]',
       '.modal', '[class*="modal"]', '[class*="popup"]', '[class*="dialog"]',
-      '[class*="overlay"]', '[class*="toast"]', '[class*="notification"]',
-      // Subscription/pricing/billing sections
-      '[class*="subscription"]', '[class*="premium"]', '[class*="pricing"]',
-      '[class*="billing"]', '[class*="payment"]', '[class*="plan"]',
-      '[class*="upgrade"]', '[class*="cancel"]',
-      // Cards and action areas
-      '[class*="card"]', '[class*="action"]', '[class*="cta"]',
-      // Forms
-      'form'
+      '[class*="overlay"]', '[class*="toast"]', '[class*="notification"]'
     ];
 
     const modals = new Set();
@@ -766,6 +785,8 @@ window.LightOn.Detector = (function () {
 
     // Analyze each modal for asymmetric buttons
     for (const modal of modals) {
+      if (!isElementVisible(modal)) continue;
+
       // Find all clickable elements
       const clickables = modal.querySelectorAll(
         'button, [role="button"], a, input[type="submit"], input[type="button"]'
@@ -773,14 +794,25 @@ window.LightOn.Detector = (function () {
 
       // Filter to visible interactive elements
       const buttons = Array.from(clickables).filter(el => {
-        const style = getComputedStyles(el);
-        if (!style) return false;
-        const isVisible = style.display !== 'none' && style.visibility !== 'hidden';
-        const hasText = el.textContent?.trim().length > 0;
-        return isVisible && hasText;
+        if (!isElementVisible(el)) return false;
+        const label = getElementLabel(el);
+        return label.length > 0;
       });
 
       if (buttons.length < 2) continue;
+
+      const maxButtons = detector.maxButtons || 6;
+      if (buttons.length > maxButtons) continue;
+
+      // Require intentful button pair (positive vs negative) to reduce false positives
+      if (detector.patterns && detector.patterns.length > 0) {
+        const hasIntentPair = detector.patterns.some(({ positivePatterns, negativePatterns }) => {
+          const hasPositive = buttons.some(btn => matchesPatterns(getElementLabel(btn), positivePatterns));
+          const hasNegative = buttons.some(btn => matchesPatterns(getElementLabel(btn), negativePatterns));
+          return hasPositive && hasNegative;
+        });
+        if (!hasIntentPair) continue;
+      }
 
       // Calculate visual metrics for each button
       const buttonMetrics = buttons.map(btn => {
@@ -802,7 +834,7 @@ window.LightOn.Detector = (function () {
 
         return {
           element: btn,
-          text: btn.textContent?.trim(),
+          text: getElementLabel(btn),
           area: rect.width * rect.height,
           width: rect.width,
           height: rect.height,
@@ -851,9 +883,9 @@ window.LightOn.Detector = (function () {
           hasBgAsymmetry
         });
 
-        // Report the modal as the detected element (so equalization affects all buttons)
+        // Report the prominent button as the detected element for better navigation
         matches.push({
-          element: modal,
+          element: prominentButton.element,
           text: buttonMetrics.map(b => b.text).join(' / '),
           visualDetails: {
             areaRatio: areaRatio.toFixed(2),

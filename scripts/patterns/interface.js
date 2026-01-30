@@ -124,17 +124,22 @@
       }
     },
 
-    // 4. 비대칭 버튼 (Asymmetric Buttons)
+    // 4. 불필요한 강조 (Undue Emphasis - Asymmetric Buttons)
     {
       id: 'asymmetric-buttons',
       category: CATEGORIES.INTERFACE,
       name: {
-        ko: '비대칭 버튼',
-        en: 'Asymmetric Buttons'
+        ko: '불필요한 강조',
+        en: 'Undue Emphasis'
+      },
+      groupId: 'undue-emphasis',
+      groupName: {
+        ko: '불필요한 강조',
+        en: 'Undue Emphasis'
       },
       description: {
-        ko: '버튼의 크기, 색상, 위치가 비대칭적으로 설계되어 특정 선택을 유도합니다.',
-        en: 'Buttons are designed with unequal size, color, or positioning to favor certain choices.'
+        ko: '버튼의 크기, 색상, 위치 차이로 특정 선택을 과도하게 강조합니다.',
+        en: 'Unequal button size, color, or placement overly emphasizes a specific choice.'
       },
       severity: SEVERITY.MEDIUM,
       detectors: [
@@ -142,6 +147,7 @@
           type: DETECTOR_TYPES.COMBINED,
           // Look for button pairs where one is prominently styled
           siblingAnalysis: true,
+          maxButtons: 6,
           patterns: [
             {
               // Accept/Continue/Yes type buttons (usually highlighted)
@@ -166,7 +172,7 @@
       highlight: {
         style: HIGHLIGHT_STYLES.OUTLINE,
         color: SEVERITY.MEDIUM,
-        icon: '⚖️'
+        icon: '🎯'
       }
     },
 
@@ -209,17 +215,22 @@
       }
     },
 
-    // 6. 잘못된 계층구조 (Visual Hierarchy Manipulation)
+    // 6. 불필요한 강조 (Undue Emphasis - Visual Hierarchy)
     {
       id: 'visual-hierarchy-manipulation',
       category: CATEGORIES.INTERFACE,
       name: {
-        ko: '잘못된 계층구조',
-        en: 'Visual Hierarchy Manipulation'
+        ko: '불필요한 강조',
+        en: 'Undue Emphasis'
+      },
+      groupId: 'undue-emphasis',
+      groupName: {
+        ko: '불필요한 강조',
+        en: 'Undue Emphasis'
       },
       description: {
-        ko: '선택항목의 크기·모양·색깔 등에 현저한 차이를 두어 사업자에게 유리한 특정 항목으로 유도합니다. 요금제, 구독 옵션 등에서 특정 선택을 강조합니다.',
-        en: 'Creates significant visual differences in size, shape, and color to guide users toward specific options that favor the business.'
+        ko: '선택 항목의 크기·모양·색상 차이로 특정 옵션을 과도하게 강조합니다.',
+        en: 'Excessive visual differences in size, shape, or color steer users toward a specific option.'
       },
       severity: SEVERITY.HIGH,
       detectors: [
@@ -237,7 +248,7 @@
           containerSelectors: [
             '[class*="pricing"]', '[class*="plan"]', '[class*="subscription"]',
             '[class*="option"]', '[class*="tier"]', '[class*="package"]',
-            '[class*="card"]', '[class*="product"]'
+            '[class*="card"]'
           ],
           thresholds: {
             prominenceScore: 3             // Minimum score to flag as manipulation
@@ -267,14 +278,13 @@
             '[class*="plan"]',
             '[class*="subscription"]',
             '[class*="option"]',
-            '[class*="product"]',
             '.pricing-table',
             '.plans',
             '.options'
           ],
           nearbyTextPatterns: [
             // Look for pricing or subscription context
-            /₩|원|\$|USD|요금|요금제|가격|구독|플랜|옵션|월|년|month|year|plan|subscription|pricing|price/i
+            /요금|요금제|구독|플랜|옵션|월|년|month|year|plan|subscription|pricing/i
           ]
         }
       ],

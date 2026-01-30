@@ -400,6 +400,10 @@
           results: currentResults.map((r, index) => ({
             patternId: r.patternId,
             patternName: PatternRegistry.getLocalizedText(r.pattern.name, getCurrentLanguage()),
+            patternGroupId: r.pattern.groupId || null,
+            patternGroupName: r.pattern.groupName
+              ? PatternRegistry.getLocalizedText(r.pattern.groupName, getCurrentLanguage())
+              : null,
             severity: r.pattern.severity,
             category: r.pattern.category,
             elementId: r.elementId,

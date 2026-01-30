@@ -171,6 +171,14 @@
     }
   }
 
+  /**
+   * Return the higher severity between two values
+   */
+  function getHigherSeverity(a, b) {
+    const order = { high: 3, medium: 2, low: 1 };
+    return order[a] >= order[b] ? a : b;
+  }
+
   // Store all results for navigation
   let allResults = [];
   let currentNavIndex = {};  // Track current index per pattern type
@@ -185,17 +193,21 @@
 
     if (!results || results.length === 0) return;
 
-    // Group by pattern with element references
+    // Group by pattern (or groupId) with element references
     const grouped = {};
     for (const result of results) {
-      const key = result.patternId;
+      const key = result.patternGroupId || result.patternId;
       if (!grouped[key]) {
         grouped[key] = {
-          ...result,
+          patternKey: key,
+          patternName: result.patternGroupName || result.patternName,
+          severity: result.severity,
+          category: result.category,
           count: 0,
           elements: []
         };
       }
+      grouped[key].severity = getHigherSeverity(grouped[key].severity, result.severity);
       grouped[key].count++;
       grouped[key].elements.push(result.elementId);
     }
@@ -204,14 +216,14 @@
     for (const pattern of Object.values(grouped)) {
       const li = document.createElement('li');
       li.className = `popup__list-item popup__list-item--${pattern.severity}`;
-      li.setAttribute('data-pattern-id', pattern.patternId);
+      li.setAttribute('data-pattern-id', pattern.patternKey);
       li.setAttribute('data-element-ids', JSON.stringify(pattern.elements));
       li.style.cursor = 'pointer';
       li.title = '클릭하여 해당 위치로 이동';
 
       const icon = document.createElement('span');
       icon.className = 'popup__list-icon';
-      icon.textContent = getPatternIcon(pattern.patternId);
+      icon.textContent = getPatternIcon(pattern.patternKey);
 
       const content = document.createElement('div');
       content.className = 'popup__list-content';
@@ -246,7 +258,7 @@
       li.appendChild(countContainer);
 
       // Click handler - navigate to element
-      li.addEventListener('click', () => handlePatternClick(pattern.patternId, pattern.elements));
+      li.addEventListener('click', () => handlePatternClick(pattern.patternKey, pattern.elements));
 
       elements.patternList.appendChild(li);
     }
@@ -320,7 +332,8 @@
       'emotional-manipulation': '🎭',
       'preselected-checkbox': '⚠️',
       'hidden-cancel': '🔍',
-      'asymmetric-buttons': '⚖️',
+      'asymmetric-buttons': '🎯',
+      'undue-emphasis': '🎯',
       'ambiguous-button': '❓',
       'hidden-cost': '💰',
       'small-print': '🔎',
