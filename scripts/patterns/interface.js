@@ -5,7 +5,7 @@
  * 사용자 인터페이스를 조작하여 특정 행동을 유도하는 다크패턴
  */
 
-(function() {
+(function () {
   'use strict';
 
   const { CATEGORIES, SEVERITY, DETECTOR_TYPES, HIGHLIGHT_STYLES } = window.LightOn.PatternRegistry;
@@ -206,6 +206,77 @@
         style: HIGHLIGHT_STYLES.BADGE,
         color: SEVERITY.LOW,
         icon: '❓'
+      }
+    },
+
+    // 6. 잘못된 계층구조 (Visual Hierarchy Manipulation)
+    {
+      id: 'visual-hierarchy-manipulation',
+      category: CATEGORIES.INTERFACE,
+      name: {
+        ko: '잘못된 계층구조',
+        en: 'Visual Hierarchy Manipulation'
+      },
+      description: {
+        ko: '선택항목의 크기·모양·색깔 등에 현저한 차이를 두어 사업자에게 유리한 특정 항목으로 유도합니다. 요금제, 구독 옵션 등에서 특정 선택을 강조합니다.',
+        en: 'Creates significant visual differences in size, shape, and color to guide users toward specific options that favor the business.'
+      },
+      severity: SEVERITY.HIGH,
+      detectors: [
+        {
+          type: DETECTOR_TYPES.COMBINED,
+          // Use sibling comparison for visual hierarchy detection
+          visualChecks: {
+            compareWithSiblings: true      // Enable sibling-based visual comparison
+          },
+          containerSelectors: [
+            '[class*="pricing"]', '[class*="plan"]', '[class*="subscription"]',
+            '[class*="option"]', '[class*="tier"]', '[class*="package"]',
+            '[class*="card"]', '[class*="product"]'
+          ],
+          thresholds: {
+            prominenceScore: 3             // Minimum score to flag as manipulation
+          }
+        },
+        {
+          type: DETECTOR_TYPES.SELECTOR,
+          selectors: [
+            // Common class names for highlighted options
+            '[class*="recommend"]',
+            '[class*="featured"]',
+            '[class*="highlight"]',
+            '[class*="popular"]',
+            '[class*="best"]',
+            '[class*="premium"]',
+            '.recommended',
+            '.featured',
+            '.highlighted',
+            '.popular',
+            '.best-value',
+            '[data-recommended="true"]',
+            '[data-featured="true"]'
+          ],
+          contextSelectors: [
+            // Only flag within pricing/option containers
+            '[class*="pricing"]',
+            '[class*="plan"]',
+            '[class*="subscription"]',
+            '[class*="option"]',
+            '[class*="product"]',
+            '.pricing-table',
+            '.plans',
+            '.options'
+          ],
+          nearbyTextPatterns: [
+            // Look for pricing or subscription context
+            /₩|원|\$|USD|월|year|month|요금|가격|price|plan|subscription/i
+          ]
+        }
+      ],
+      highlight: {
+        style: HIGHLIGHT_STYLES.BADGE,
+        color: SEVERITY.HIGH,
+        icon: '🎯'
       }
     }
   ];

@@ -7,7 +7,7 @@
 
 window.LightOn = window.LightOn || {};
 
-window.LightOn.Highlighter = (function() {
+window.LightOn.Highlighter = (function () {
   'use strict';
 
   const registry = window.LightOn.PatternRegistry;
@@ -33,17 +33,20 @@ window.LightOn.Highlighter = (function() {
 
     // Hover handlers for tooltip
     dot.addEventListener('mouseenter', (e) => {
-      showHoverTooltip(pattern, dot, e);
+      cancelHideTooltip();
+      showHoverTooltip(pattern, dot, e, targetElement);
     });
 
     dot.addEventListener('mouseleave', () => {
-      hideHoverTooltip();
+      scheduleHideTooltip();
     });
 
-    // Click handler - keep tooltip open
+    // Click handler - show persistent tooltip
     dot.addEventListener('click', (e) => {
       e.stopPropagation();
       e.preventDefault();
+      cancelHideTooltip();
+      showHoverTooltip(pattern, dot, e, targetElement);
     });
 
     return dot;
@@ -51,15 +54,56 @@ window.LightOn.Highlighter = (function() {
 
   // Hover tooltip element
   let hoverTooltip = null;
+  let hideTooltipTimeout = null;
+
+  /**
+   * Schedule hiding the tooltip after a delay
+   */
+  function scheduleHideTooltip() {
+    cancelHideTooltip();
+    hideTooltipTimeout = setTimeout(() => {
+      hideHoverTooltip();
+    }, 150);  // 150ms delay to allow mouse to enter tooltip
+  }
+
+  /**
+   * Cancel scheduled hide
+   */
+  function cancelHideTooltip() {
+    if (hideTooltipTimeout) {
+      clearTimeout(hideTooltipTimeout);
+      hideTooltipTimeout = null;
+    }
+  }
 
   /**
    * Show tooltip on hover
    */
-  function showHoverTooltip(pattern, dot, event) {
+  function showHoverTooltip(pattern, dot, event, passedTargetElement) {
+    // If tooltip already showing for this pattern, just cancel hide
+    if (hoverTooltip && hoverTooltip.getAttribute('data-lighton-tooltip') === pattern.id) {
+      cancelHideTooltip();
+      return;
+    }
+
     hideHoverTooltip();
 
-    const tooltip = createTooltip(pattern);
-    tooltip.style.pointerEvents = 'none';
+    // Find the target element (the one being highlighted)
+    const targetElement = passedTargetElement ||
+      (dot.parentElement?.hasAttribute('data-lighton-pattern') ? dot.parentElement : dot.previousSibling);
+
+    const tooltip = createTooltip(pattern, targetElement);
+    tooltip.style.pointerEvents = 'auto';
+
+    // Add mouse handlers to tooltip to prevent hiding
+    tooltip.addEventListener('mouseenter', () => {
+      cancelHideTooltip();
+    });
+
+    tooltip.addEventListener('mouseleave', () => {
+      scheduleHideTooltip();
+    });
+
     document.body.appendChild(tooltip);
 
     // Position tooltip near the dot
@@ -101,6 +145,7 @@ window.LightOn.Highlighter = (function() {
    * Hide hover tooltip
    */
   function hideHoverTooltip() {
+    cancelHideTooltip();
     if (hoverTooltip) {
       hoverTooltip.remove();
       hoverTooltip = null;
@@ -118,7 +163,7 @@ window.LightOn.Highlighter = (function() {
   /**
    * Create a tooltip element
    */
-  function createTooltip(pattern) {
+  function createTooltip(pattern, targetElement) {
     const tooltip = document.createElement('div');
     tooltip.className = 'lighton-tooltip';
     tooltip.setAttribute('data-lighton-tooltip', pattern.id);
@@ -151,6 +196,54 @@ window.LightOn.Highlighter = (function() {
     description.textContent = registry.getLocalizedText(pattern.description, currentLang);
     tooltip.appendChild(description);
 
+    // Actions section
+    if (window.LightOn.Actions && targetElement) {
+      const actions = window.LightOn.Actions.getAvailableActions(pattern.id);
+      if (actions && actions.length > 0) {
+        const actionsSection = document.createElement('div');
+        actionsSection.className = 'lighton-tooltip__actions';
+
+        const labels = window.LightOn.Actions.getActionLabels(currentLang);
+
+        actions.forEach(actionType => {
+          const button = document.createElement('button');
+          button.className = 'lighton-tooltip__action-btn';
+          button.textContent = labels[actionType] || actionType;
+          button.setAttribute('data-action-type', actionType);
+
+          button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const result = window.LightOn.Actions.executeAction(pattern.id, targetElement, actionType);
+            if (result) {
+              // Update button to show success
+              button.textContent = labels[actionType + 'd'] || '✓';
+              button.classList.add('lighton-tooltip__action-btn--applied');
+              button.disabled = true;
+
+              // Add undo button
+              const undoBtn = document.createElement('button');
+              undoBtn.className = 'lighton-tooltip__action-btn lighton-tooltip__action-btn--undo';
+              undoBtn.textContent = labels.undo;
+              undoBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (window.LightOn.Actions.undoAction(result.actionId)) {
+                  button.textContent = labels[actionType];
+                  button.classList.remove('lighton-tooltip__action-btn--applied');
+                  button.disabled = false;
+                  undoBtn.remove();
+                }
+              });
+              button.parentNode.insertBefore(undoBtn, button.nextSibling);
+            }
+          });
+
+          actionsSection.appendChild(button);
+        });
+
+        tooltip.appendChild(actionsSection);
+      }
+    }
+
     // Footer
     const footer = document.createElement('div');
     footer.className = 'lighton-tooltip__footer';
@@ -179,7 +272,7 @@ window.LightOn.Highlighter = (function() {
     // Hide any existing tooltip
     hideActiveTooltip();
 
-    const tooltip = createTooltip(pattern);
+    const tooltip = createTooltip(pattern, targetElement);
     document.body.appendChild(tooltip);
 
     // Position tooltip below the badge
@@ -289,7 +382,8 @@ window.LightOn.Highlighter = (function() {
   }
 
   /**
-   * Highlight a detected pattern
+   * Highlight/mark a detected element
+   * Now only marks the element without visible indicators since auto-equalization is applied
    */
   function highlight(detection) {
     const { element, pattern } = detection;
@@ -304,23 +398,11 @@ window.LightOn.Highlighter = (function() {
       return;
     }
 
-    const style = pattern.highlight?.style || 'badge';
+    // Just mark the element as detected (no visual dot/badge since auto-equalization is applied)
+    element.classList.add('lighton-detected');
+    element.setAttribute('data-lighton-pattern', pattern.id);
 
-    switch (style) {
-      case 'outline':
-        applyOutline(element, pattern);
-        applyBadge(element, pattern);  // Also add badge for interactivity
-        break;
-      case 'badge':
-        applyBadge(element, pattern);
-        break;
-      case 'tooltip':
-        // Tooltip style just adds a subtle outline, tooltip shows on hover
-        applyOutline(element, pattern);
-        break;
-      default:
-        applyBadge(element, pattern);
-    }
+    // NOTE: Dots and badges removed - auto-equalization is now applied automatically
   }
 
   /**
