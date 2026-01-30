@@ -325,6 +325,30 @@ body {
   transform: translateX(0);
 }
 
+/* Active state for navigation */
+.popup__list-item--active {
+  background: #E8F4FD;
+  border-left-color: #3B82F6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.popup__list-item--active .popup__list-arrow {
+  opacity: 1;
+  transform: translateX(0);
+  color: #3B82F6;
+}
+
+/* Navigation counter */
+.popup__nav-counter {
+  font-size: 11px;
+  font-weight: 600;
+  color: #3B82F6;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 4px;
+}
+
 /* Empty State */
 .popup__empty {
   display: flex;
