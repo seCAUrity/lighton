@@ -677,7 +677,11 @@ window.LightOn.Detector = (function () {
       if (children.length < 2) continue;  // Need at least 2 items to compare
 
       // Check if this looks like a pricing/option container
-      const containerText = getVisibleText(container).toLowerCase();
+      const containerText = getVisibleText(container);
+      if (detector.contextTextPatterns && !matchesPatterns(containerText, detector.contextTextPatterns)) {
+        continue;
+      }
+
       const isPricingContext = /₩|원|\$|usd|월|year|month|요금|가격|price|plan|subscription|옵션|option/i.test(containerText);
 
       if (!isPricingContext && !detector.skipContextCheck) continue;
