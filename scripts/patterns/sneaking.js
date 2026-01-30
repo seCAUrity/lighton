@@ -49,6 +49,7 @@
             '[class*="extra"]',
             '[class*="additional"]'
           ],
+          nearPriceElement: true,
           visualChecks: {
             checkSmallFont: true,
             checkMutedColor: true
