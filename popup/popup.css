@@ -447,3 +447,253 @@ body {
 .popup__list::-webkit-scrollbar-thumb:hover {
   background: var(--lighton-gray);
 }
+
+/* ============= Secession Section ============= */
+
+.popup__secession {
+  border-top: 1px solid var(--lighton-gray-light);
+  background: #fff;
+}
+
+.secession__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  cursor: pointer;
+  background: #fdfdfd;
+  transition: background-color 0.2s;
+}
+
+.secession__trigger:hover {
+  background: #f5f5f5;
+}
+
+.secession__trigger-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.secession__icon {
+  font-size: 16px;
+}
+
+.secession__trigger-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.secession__trigger-arrow {
+  font-size: 12px;
+  color: #888;
+  transition: transform 0.3s ease;
+}
+
+.popup__secession.open .secession__trigger-arrow {
+  transform: rotate(180deg);
+}
+
+.popup__secession.open {
+  background: linear-gradient(135deg, rgba(255, 184, 0, 0.03), rgba(255, 184, 0, 0.08));
+}
+
+.secession__body {
+  padding: 0 16px 12px 16px;
+  border-top: 1px solid rgba(0,0,0,0.03);
+}
+
+/* Loading */
+.secession__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+}
+
+.secession__spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 184, 0, 0.2);
+  border-top-color: #FFB800;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.secession__loading p {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}
+
+/* Content */
+.secession__content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+}
+
+.secession__service {
+  font-size: 13px;
+  color: #1a1a1a;
+}
+
+.secession__service strong {
+  font-weight: 600;
+}
+
+/* Difficulty Badge */
+.secession__difficulty-container {
+  display: flex;
+}
+
+.secession__difficulty {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  border-left: 3px solid;
+}
+
+.secession__difficulty--easy {
+  background: rgba(78, 205, 196, 0.1);
+  color: #2d9e93;
+  border-left-color: #4ECDC4;
+}
+
+.secession__difficulty--medium {
+  background: rgba(255, 184, 0, 0.1);
+  color: #cc9400;
+  border-left-color: #FFB800;
+}
+
+.secession__difficulty--hard {
+  background: rgba(255, 107, 107, 0.1);
+  color: #d43f3f;
+  border-left-color: #FF6B6B;
+}
+
+.secession__difficulty--limited {
+  background: rgba(107, 114, 128, 0.1);
+  color: #4b5563;
+  border-left-color: #6B7280;
+}
+
+.secession__difficulty--impossible {
+  background: rgba(107, 114, 128, 0.15);
+  color: #374151;
+  border-left-color: #6B7280;
+}
+
+.secession__difficulty-icon {
+  font-size: 14px;
+}
+
+/* Notes */
+.secession__notes {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #555;
+  margin: 0;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Action Button */
+.secession__action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #FFB800, #FFA000);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(255, 184, 0, 0.3);
+}
+
+.secession__action:hover {
+  background: linear-gradient(135deg, #FFA000, #FF9000);
+  box-shadow: 0 4px 10px rgba(255, 184, 0, 0.4);
+  transform: translateY(-1px);
+}
+
+.secession__action:active {
+  transform: translateY(0);
+}
+
+.secession__action-arrow {
+  font-size: 16px;
+  transition: transform 0.2s;
+}
+
+.secession__action:hover .secession__action-arrow {
+  transform: translateX(3px);
+}
+
+/* Not Found */
+.secession__not-found {
+  padding: 12px 0;
+  text-align: center;
+}
+
+.secession__not-found-text {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Error */
+.secession__error {
+  padding: 12px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.secession__error-text {
+  font-size: 12px;
+  color: #d43f3f;
+  margin: 0;
+}
+
+.secession__retry {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.secession__retry:hover {
+  background: #ececec;
+  border-color: #ccc;
+}
+
+.secession__retry:active {
+  transform: scale(0.98);
+}
