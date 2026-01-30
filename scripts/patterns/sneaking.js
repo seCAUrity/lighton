@@ -117,8 +117,7 @@
         {
           type: DETECTOR_TYPES.SELECTOR,
           selectors: [
-            // Pre-selected add-ons in cart context
-            'input[type="checkbox"][checked]',
+            // :checked captures both HTML [checked] attribute and dynamic state
             'input[type="checkbox"]:checked'
           ],
           contextSelectors: [
@@ -148,7 +147,7 @@
         }
       ],
       highlight: {
-        style: HIGHLIGHT_STYLES.BADGE,
+        style: HIGHLIGHT_STYLES.OUTLINE,
         color: SEVERITY.HIGH,
         icon: '🛒'
       }
