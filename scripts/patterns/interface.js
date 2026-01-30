@@ -229,10 +229,15 @@
           visualChecks: {
             compareWithSiblings: true      // Enable sibling-based visual comparison
           },
+          contextTextPatterns: [
+            /요금제|구독|플랜|옵션|패키지|등급|단계|가격\s*비교/i,
+            /plan|subscription|tier|package|option|pricing|compare/i,
+            /월|개월|연|year|month/i
+          ],
           containerSelectors: [
             '[class*="pricing"]', '[class*="plan"]', '[class*="subscription"]',
             '[class*="option"]', '[class*="tier"]', '[class*="package"]',
-            '[class*="card"]', '[class*="product"]'
+            '[class*="card"]'
           ],
           thresholds: {
             prominenceScore: 3             // Minimum score to flag as manipulation
@@ -262,14 +267,13 @@
             '[class*="plan"]',
             '[class*="subscription"]',
             '[class*="option"]',
-            '[class*="product"]',
             '.pricing-table',
             '.plans',
             '.options'
           ],
           nearbyTextPatterns: [
             // Look for pricing or subscription context
-            /₩|원|\$|USD|월|year|month|요금|가격|price|plan|subscription/i
+            /요금|요금제|구독|플랜|옵션|월|년|month|year|plan|subscription|pricing/i
           ]
         }
       ],
