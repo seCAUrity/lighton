@@ -32,8 +32,8 @@ window.LightOn.ActionRegistry = (function() {
   const actionConfig = {
     // Interface patterns
     'asymmetric-buttons': {
-      available: ['hide'],
-      primary: 'hide',
+      available: [],
+      primary: null,
       autoApply: { enabled: false },
       readabilityFix: { enabled: true }
     },
@@ -50,7 +50,7 @@ window.LightOn.ActionRegistry = (function() {
       readabilityFix: { enabled: true, fontSize: 18, contrastFix: true }
     },
     'visual-hierarchy-manipulation': {
-      available: ['equalize', 'neutralize', 'hide'],
+      available: ['equalize', 'neutralize'],
       primary: 'equalize',
       autoApply: { enabled: false },  // Disabled to prevent font breaking
       readabilityFix: { enabled: false }
@@ -88,8 +88,8 @@ window.LightOn.ActionRegistry = (function() {
       readabilityFix: { enabled: false }
     },
     'emotional-manipulation': {
-      available: ['hide'],
-      primary: 'hide',
+      available: [],
+      primary: null,
       autoApply: { enabled: false },
       readabilityFix: { enabled: false }
     }
@@ -99,8 +99,8 @@ window.LightOn.ActionRegistry = (function() {
    * Default configuration for patterns not explicitly defined
    */
   const defaultConfig = {
-    available: ['hide'],
-    primary: 'hide',
+    available: [],
+    primary: null,
     autoApply: { enabled: false },
     readabilityFix: { enabled: false }
   };
