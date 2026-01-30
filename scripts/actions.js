@@ -318,29 +318,29 @@ window.LightOn.Actions = (function () {
     const computedStyles = buttons.map(btn => window.getComputedStyle(btn));
     const fontFamily = computedStyles[0].fontFamily;
 
-    // Calculate the largest and smallest button dimensions
+    // Calculate button dimensions
     const sizes = buttons.map(btn => ({
       width: btn.offsetWidth,
       height: btn.offsetHeight,
       fontSize: parseFloat(window.getComputedStyle(btn).fontSize)
     }));
 
-    // Find a balanced size (average of max and min, but at least reasonable minimum)
-    const avgWidth = Math.max(160, sizes.reduce((sum, s) => sum + s.width, 0) / sizes.length);
-    const avgHeight = Math.max(44, sizes.reduce((sum, s) => sum + s.height, 0) / sizes.length);
-    const avgFontSize = Math.max(14, sizes.reduce((sum, s) => sum + s.fontSize, 0) / sizes.length);
+    // Use MAXIMUM size so all buttons match the largest one (아래 버튼을 위 크기에 맞춤)
+    const maxWidth = Math.max(...sizes.map(s => s.width));
+    const maxHeight = Math.max(...sizes.map(s => s.height));
+    const maxFontSize = Math.max(...sizes.map(s => s.fontSize));
 
-    // Equalized style - neutral colors with good contrast
+    // Equalized style - same size for all buttons
     const equalizedStyle = {
       display: 'inline-flex',
       alignItems: 'center',
       justifyContent: 'center',
-      minWidth: `${avgWidth}px`,
-      minHeight: `${avgHeight}px`,
+      minWidth: `${maxWidth}px`,
+      minHeight: `${maxHeight}px`,
       padding: '12px 24px',
       margin: '8px',
       fontFamily: fontFamily,
-      fontSize: `${avgFontSize}px`,
+      fontSize: `${maxFontSize}px`,
       fontWeight: '500',
       lineHeight: '1.4',
       textAlign: 'center',
@@ -364,16 +364,17 @@ window.LightOn.Actions = (function () {
       Object.assign(btn.style, equalizedStyle);
 
       // Apply color scheme - both options should be equally visible
+      // 원래 보라색 톤 유지 + 조화로운 색상
       if (index % 2 === 0) {
-        // Primary style - solid background
-        btn.style.backgroundColor = '#4A5568';  // Neutral dark gray
+        // Primary style - original purple solid
+        btn.style.backgroundColor = '#6366F1';  // 원래 보라색
         btn.style.color = '#FFFFFF';
-        btn.style.border = '2px solid #4A5568';
+        btn.style.border = '2px solid #6366F1';
       } else {
-        // Secondary style - outlined
-        btn.style.backgroundColor = '#FFFFFF';
-        btn.style.color = '#2D3748';
-        btn.style.border = '2px solid #4A5568';
+        // Secondary style - complementary teal (청록색)
+        btn.style.backgroundColor = '#0D9488';  // 청록색 (보라색과 조화)
+        btn.style.color = '#FFFFFF';
+        btn.style.border = '2px solid #0D9488';
       }
 
       // Ensure button-like appearance for links
