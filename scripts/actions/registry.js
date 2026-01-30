@@ -40,7 +40,7 @@ window.LightOn.ActionRegistry = (function() {
     'preselected-checkbox': {
       available: ['uncheck'],
       primary: 'uncheck',
-      autoApply: { enabled: true, action: 'uncheck' },
+      autoApply: { enabled: false },
       readabilityFix: { enabled: false }
     },
     'hidden-cancel': {
