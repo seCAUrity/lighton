@@ -237,7 +237,7 @@
           containerSelectors: [
             '[class*="pricing"]', '[class*="plan"]', '[class*="subscription"]',
             '[class*="option"]', '[class*="tier"]', '[class*="package"]',
-            '[class*="card"]'
+            '[class*="card"]', '[class*="product"]'
           ],
           thresholds: {
             prominenceScore: 3             // Minimum score to flag as manipulation
@@ -267,13 +267,14 @@
             '[class*="plan"]',
             '[class*="subscription"]',
             '[class*="option"]',
+            '[class*="product"]',
             '.pricing-table',
             '.plans',
             '.options'
           ],
           nearbyTextPatterns: [
             // Look for pricing or subscription context
-            /요금|요금제|구독|플랜|옵션|월|년|month|year|plan|subscription|pricing/i
+            /₩|원|\$|USD|요금|요금제|가격|구독|플랜|옵션|월|년|month|year|plan|subscription|pricing|price/i
           ]
         }
       ],
