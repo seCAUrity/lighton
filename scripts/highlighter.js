@@ -31,14 +31,21 @@ window.LightOn.Highlighter = (function () {
     dot.setAttribute('role', 'status');
     dot.setAttribute('aria-label', registry.getLocalizedText(pattern.name, currentLang));
 
-    // Hover handlers for tooltip
+    // Hover handlers for tooltip and preview
     dot.addEventListener('mouseenter', (e) => {
       cancelHideTooltip();
       showHoverTooltip(pattern, dot, e, targetElement);
+
+      // Preview original state (before auto-fix was applied)
+      const actionId = targetElement.getAttribute('data-lighton-action-id');
+      if (actionId && window.LightOn.Actions) {
+        window.LightOn.Actions.previewOriginal(actionId);
+      }
     });
 
     dot.addEventListener('mouseleave', () => {
       scheduleHideTooltip();
+      // Preview will end when tooltip is actually hidden (in hideHoverTooltip)
     });
 
     // Click handler - show persistent tooltip
@@ -149,6 +156,11 @@ window.LightOn.Highlighter = (function () {
     if (hoverTooltip) {
       hoverTooltip.remove();
       hoverTooltip = null;
+    }
+
+    // End preview and re-apply action when tooltip is hidden
+    if (window.LightOn.Actions && window.LightOn.Actions.isPreviewing()) {
+      window.LightOn.Actions.endPreview();
     }
   }
 
@@ -382,8 +394,7 @@ window.LightOn.Highlighter = (function () {
   }
 
   /**
-   * Highlight/mark a detected element
-   * Now only marks the element without visible indicators since auto-equalization is applied
+   * Highlight/mark a detected element with visual indicator (dot/badge)
    */
   function highlight(detection) {
     const { element, pattern } = detection;
@@ -398,11 +409,23 @@ window.LightOn.Highlighter = (function () {
       return;
     }
 
-    // Just mark the element as detected (no visual dot/badge since auto-equalization is applied)
-    element.classList.add('lighton-detected');
-    element.setAttribute('data-lighton-pattern', pattern.id);
+    const style = pattern.highlight?.style || 'badge';
 
-    // NOTE: Dots and badges removed - auto-equalization is now applied automatically
+    switch (style) {
+      case 'outline':
+        applyOutline(element, pattern);
+        applyDot(element, pattern);  // Also add dot for interactivity
+        break;
+      case 'badge':
+        applyDot(element, pattern);
+        break;
+      case 'tooltip':
+        // Tooltip style just adds a subtle outline, tooltip shows on hover
+        applyOutline(element, pattern);
+        break;
+      default:
+        applyDot(element, pattern);
+    }
   }
 
   /**

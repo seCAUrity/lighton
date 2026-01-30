@@ -13,6 +13,9 @@ window.LightOn.Actions = (function() {
   // Track applied actions for undo functionality
   const appliedActions = new Map();
 
+  // Track previewing state
+  let previewingActionId = null;
+
   // Get dependencies
   function getRegistry() {
     return window.LightOn.ActionRegistry;
@@ -78,11 +81,104 @@ window.LightOn.Actions = (function() {
     // Store action for undo
     if (result) {
       const actionId = `${patternId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      appliedActions.set(actionId, result);
       result.actionId = actionId;
+      result.patternId = patternId;
+      result.actionType = actionType;
+      appliedActions.set(actionId, result);
+
+      // Store actionId on element for highlighter access
+      element.setAttribute('data-lighton-action-id', actionId);
     }
 
     return result;
+  }
+
+  /**
+   * Preview the original state (before action was applied)
+   * Used for hover preview on dots
+   * @param {string} actionId - Action ID to preview
+   * @returns {boolean} Whether preview started successfully
+   */
+  function previewOriginal(actionId) {
+    // Already previewing this action
+    if (previewingActionId === actionId) return true;
+
+    // End any existing preview
+    if (previewingActionId) {
+      endPreview();
+    }
+
+    const action = appliedActions.get(actionId);
+    if (action && action.restore) {
+      // Temporarily restore original state
+      action.restore();
+      previewingActionId = actionId;
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * End preview and re-apply the action
+   * @returns {boolean} Whether action was re-applied
+   */
+  function endPreview() {
+    if (!previewingActionId) return false;
+
+    const action = appliedActions.get(previewingActionId);
+    if (!action) {
+      previewingActionId = null;
+      return false;
+    }
+
+    const { patternId, element, actionType } = action;
+    previewingActionId = null;
+
+    // Re-apply the action (need to execute again)
+    if (element && patternId && actionType) {
+      const Impl = getImplementations();
+      let newResult = null;
+
+      switch (actionType) {
+        case 'uncheck':
+          newResult = Impl.uncheckCheckbox(element);
+          break;
+        case 'equalize':
+          newResult = Impl.equalizeVisualHierarchy(element);
+          break;
+        case 'neutralize':
+          newResult = Impl.neutralizeHierarchy(element);
+          break;
+        case 'emphasize':
+          newResult = Impl.emphasizeHidden(element);
+          break;
+        case 'enlarge':
+          newResult = Impl.enlargeText(element);
+          break;
+        case 'hide':
+          newResult = Impl.hideElement(element);
+          break;
+      }
+
+      // Update stored action with new restore function
+      if (newResult) {
+        newResult.actionId = action.actionId;
+        newResult.patternId = patternId;
+        newResult.actionType = actionType;
+        appliedActions.set(action.actionId, newResult);
+      }
+
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Check if currently previewing
+   * @returns {boolean}
+   */
+  function isPreviewing() {
+    return previewingActionId !== null;
   }
 
   /**
@@ -190,6 +286,10 @@ window.LightOn.Actions = (function() {
     clearAll,
     getAppliedCount,
     getAppliedActionIds,
-    getActionLabels
+    getActionLabels,
+    // Preview functionality
+    previewOriginal,
+    endPreview,
+    isPreviewing
   };
 })();
