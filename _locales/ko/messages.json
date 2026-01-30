@@ -1,0 +1,150 @@
+{
+  "extensionName": {
+    "message": "LightOn - 다크패턴 탐지기",
+    "description": "Extension name"
+  },
+  "extensionDescription": {
+    "message": "웹사이트의 다크패턴을 탐지하고 하이라이팅하여 사용자에게 알려줍니다.",
+    "description": "Extension description"
+  },
+  "popupTitle": {
+    "message": "LightOn",
+    "description": "Popup title"
+  },
+  "popupSubtitle": {
+    "message": "다크패턴 탐지기",
+    "description": "Popup subtitle"
+  },
+  "enabledLabel": {
+    "message": "활성화",
+    "description": "Enabled toggle label"
+  },
+  "disabledLabel": {
+    "message": "비활성화",
+    "description": "Disabled toggle label"
+  },
+  "detectedCount": {
+    "message": "탐지된 패턴",
+    "description": "Detected patterns label"
+  },
+  "noPatterns": {
+    "message": "이 페이지에서 다크패턴이 발견되지 않았습니다.",
+    "description": "No patterns detected message"
+  },
+  "severityLow": {
+    "message": "낮음",
+    "description": "Low severity"
+  },
+  "severityMedium": {
+    "message": "중간",
+    "description": "Medium severity"
+  },
+  "severityHigh": {
+    "message": "높음",
+    "description": "High severity"
+  },
+  "categoryInterface": {
+    "message": "인터페이스 조작",
+    "description": "Interface interference category"
+  },
+  "categorySneaking": {
+    "message": "규정의 숨김",
+    "description": "Sneaking category"
+  },
+  "categoryObstruction": {
+    "message": "경로의 방해",
+    "description": "Obstruction category"
+  },
+  "categoryNagging": {
+    "message": "반복적 간섭",
+    "description": "Nagging category"
+  },
+  "categorySocial": {
+    "message": "사회적 증거 조작",
+    "description": "Social proof manipulation category"
+  },
+  "categoryForced": {
+    "message": "행동의 강요",
+    "description": "Forced action category"
+  },
+  "patternEmotionalManipulation": {
+    "message": "감정 자극 문구",
+    "description": "Emotional manipulation pattern name"
+  },
+  "patternEmotionalManipulationDesc": {
+    "message": "감정적 압박으로 특정 선택을 유도합니다.",
+    "description": "Emotional manipulation pattern description"
+  },
+  "patternPreselectedCheckbox": {
+    "message": "사전 선택된 체크박스",
+    "description": "Preselected checkbox pattern name"
+  },
+  "patternPreselectedCheckboxDesc": {
+    "message": "동의/구독 체크박스가 미리 선택되어 있습니다.",
+    "description": "Preselected checkbox pattern description"
+  },
+  "patternHiddenCancel": {
+    "message": "숨겨진 해지 옵션",
+    "description": "Hidden cancel pattern name"
+  },
+  "patternHiddenCancelDesc": {
+    "message": "해지/취소 링크가 눈에 띄지 않게 설계되어 있습니다.",
+    "description": "Hidden cancel pattern description"
+  },
+  "patternAsymmetricButtons": {
+    "message": "비대칭 버튼",
+    "description": "Asymmetric buttons pattern name"
+  },
+  "patternAsymmetricButtonsDesc": {
+    "message": "버튼 크기나 색상이 특정 선택을 유도하도록 설계되어 있습니다.",
+    "description": "Asymmetric buttons pattern description"
+  },
+  "patternAmbiguousButton": {
+    "message": "모호한 버튼 문구",
+    "description": "Ambiguous button pattern name"
+  },
+  "patternAmbiguousButtonDesc": {
+    "message": "버튼 문구가 중의적이어서 혼란을 줄 수 있습니다.",
+    "description": "Ambiguous button pattern description"
+  },
+  "patternHiddenCost": {
+    "message": "숨겨진 비용",
+    "description": "Hidden cost pattern name"
+  },
+  "patternHiddenCostDesc": {
+    "message": "추가 비용이 명확하게 표시되지 않습니다.",
+    "description": "Hidden cost pattern description"
+  },
+  "patternSmallPrint": {
+    "message": "작은 글씨 약관",
+    "description": "Small print pattern name"
+  },
+  "patternSmallPrintDesc": {
+    "message": "중요한 정보가 작은 글씨로 숨겨져 있습니다.",
+    "description": "Small print pattern description"
+  },
+  "patternAutoAddCart": {
+    "message": "자동 추가 옵션",
+    "description": "Auto add to cart pattern name"
+  },
+  "patternAutoAddCartDesc": {
+    "message": "장바구니에 자동으로 추가 상품이 포함됩니다.",
+    "description": "Auto add to cart pattern description"
+  },
+  "patternFreeTrialTrap": {
+    "message": "무료체험 자동전환",
+    "description": "Free trial trap pattern name"
+  },
+  "patternFreeTrialTrapDesc": {
+    "message": "무료체험 후 자동으로 유료 구독으로 전환됩니다.",
+    "description": "Free trial trap pattern description"
+  },
+  "tooltipClickForMore": {
+    "message": "클릭하여 자세히 보기",
+    "description": "Click for more details tooltip"
+  },
+  "poweredBy": {
+    "message": "LightOn으로 분석됨",
+    "description": "Powered by LightOn footer"
+  }
+}

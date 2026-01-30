@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LightOn 테스트 페이지 - 다크패턴 예시</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #1A1A2E 0%, #0F0F1A 100%);
+      color: white;
+      border-radius: 16px;
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      opacity: 0.8;
+    }
+
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .section h2 {
+      font-size: 1.25rem;
+      margin-bottom: 8px;
+      color: #1A1A2E;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section h2 .tag {
+      font-size: 0.65rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .tag-high { background: #FF6B6B; color: white; }
+    .tag-medium { background: #FFB800; color: #1A1A2E; }
+    .tag-low { background: #4ECDC4; color: #1A1A2E; }
+
+    .section p.desc {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+
+    .example {
+      background: #f9f9f9;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 16px;
+    }
+
+    .example-label {
+      font-size: 0.75rem;
+      color: #999;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Button Styles */
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #4F46E5;
+      color: white;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: #4338CA;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #666;
+      font-size: 0.85rem;
+    }
+
+    .btn-large {
+      padding: 16px 32px;
+      font-size: 1.1rem;
+    }
+
+    .btn-small {
+      padding: 8px 16px;
+      font-size: 0.8rem;
+    }
+
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .form-group input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+    }
+
+    .small-text {
+      font-size: 10px;
+      color: #999;
+      margin-top: 4px;
+    }
+
+    .tiny-text {
+      font-size: 9px;
+      color: #bbb;
+    }
+
+    /* Price Styles */
+    .price {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1A1A2E;
+    }
+
+    .price-note {
+      font-size: 0.7rem;
+      color: #999;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+
+    .modal h3 {
+      margin-bottom: 16px;
+    }
+
+    .modal p {
+      color: #666;
+      margin-bottom: 24px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Hidden Link */
+    .hidden-link {
+      font-size: 11px;
+      color: #ccc;
+      text-decoration: none;
+    }
+
+    /* Cart Item */
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+
+    /* Trial Banner */
+    .trial-banner {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .trial-banner h3 {
+      margin-bottom: 8px;
+    }
+
+    .trial-banner .small {
+      font-size: 0.8rem;
+      opacity: 0.8;
+    }
+
+    /* Categories */
+    .category-header {
+      background: #1A1A2E;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .category-header span {
+      font-size: 1.5rem;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #eee;
+      margin: 40px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>💡 LightOn 테스트 페이지</h1>
+      <p>다크패턴 탐지 기능을 테스트하기 위한 예시 페이지입니다.</p>
+    </header>
+
+    <!-- Category: Interface Interference -->
+    <div class="category-header">
+      <span>🎨</span>
+      <div>
+        <h2 style="margin:0;font-size:1.1rem;">인터페이스 조작 (Interface Interference)</h2>
+        <p style="margin:0;font-size:0.8rem;opacity:0.7;">사용자 인터페이스를 조작하여 특정 행동을 유도</p>
+      </div>
+    </div>
+
+    <!-- Pattern 1: Emotional Manipulation -->
+    <div class="section">
+      <h2>
+        🎭 감정 자극 문구 (Confirmshaming)
+        <span class="tag tag-medium">중간</span>
+      </h2>
+      <p class="desc">감정적 압박으로 특정 선택을 유도하는 버튼 문구</p>
+
+      <div class="example">
+        <div class="example-label">예시 1: 뉴스레터 구독</div>
+        <p style="margin-bottom:16px;">특별 할인 소식을 받아보세요!</p>
+        <button class="btn btn-primary">네, 할인 받을래요!</button>
+        <button class="btn btn-secondary">아니요, 할인이 싫어요</button>
+      </div>
+
+      <div class="example">
+        <div class="example-label">예시 2: 팝업 닫기</div>
+        <p style="margin-bottom:16px;">지금 가입하면 20% 할인!</p>
+        <button class="btn btn-primary btn-large">지금 가입하기</button>
+        <br><br>
+        <button class="btn btn-secondary">아니요, 혜택을 포기할게요</button>
+      </div>
+
+      <div class="example">
+        <div class="example-label">예시 3: 영문 패턴</div>
+        <p style="margin-bottom:16px;">Get 50% off your first order!</p>
+        <button class="btn btn-primary">Yes, I want to save money!</button>
+        <button class="btn btn-secondary">No, I don't like saving money</button>
+      </div>
+    </div>
+
+    <!-- Pattern 2: Preselected Checkbox -->
+    <div class="section">
+      <h2>
+        ⚠️ 사전 선택된 체크박스
+        <span class="tag tag-high">높음</span>
+      </h2>
+      <p class="desc">마케팅 수신, 뉴스레터 구독 등의 체크박스가 미리 선택되어 있음</p>
+
+      <div class="example">
+        <div class="example-label">예시: 회원가입 폼</div>
+        <form>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" checked>
+              마케팅 정보 수신에 동의합니다
+            </label>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" checked>
+              뉴스레터를 구독합니다
+            </label>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" checked>
+              제3자 광고 수신에 동의합니다
+            </label>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox">
+              이용약관에 동의합니다 (필수)
+            </label>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Pattern 3: Hidden Cancel -->
+    <div class="section">
+      <h2>
+        🔍 숨겨진 해지 옵션
+        <span class="tag tag-high">높음</span>
+      </h2>
+      <p class="desc">해지/취소 링크가 눈에 띄지 않게 설계됨</p>
+
+      <div class="example">
+        <div class="example-label">예시: 구독 관리 페이지</div>
+        <div style="text-align:center;padding:20px;">
+          <h3>프리미엄 구독 중</h3>
+          <p style="color:#666;margin:16px 0;">다음 결제일: 2024년 2월 1일</p>
+          <button class="btn btn-primary btn-large">구독 업그레이드</button>
+          <br><br>
+          <a href="#" class="hidden-link">구독 해지</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pattern 4: Asymmetric Buttons -->
+    <div class="section">
+      <h2>
+        ⚖️ 비대칭 버튼
+        <span class="tag tag-medium">중간</span>
+      </h2>
+      <p class="desc">버튼 크기나 색상이 특정 선택을 유도하도록 설계됨</p>
+
+      <div class="example">
+        <div class="example-label">예시: 쿠키 동의</div>
+        <div style="background:#f0f0f0;padding:20px;border-radius:8px;">
+          <p style="margin-bottom:16px;">이 웹사이트는 쿠키를 사용합니다.</p>
+          <button class="btn btn-primary btn-large" style="width:200px;">모두 수락</button>
+          <button class="btn btn-small" style="color:#999;">필수 쿠키만</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pattern 5: Ambiguous Button -->
+    <div class="section">
+      <h2>
+        ❓ 모호한 버튼 문구
+        <span class="tag tag-low">낮음</span>
+      </h2>
+      <p class="desc">"계속", "확인" 등 중의적인 문구로 혼란을 줌</p>
+
+      <div class="example">
+        <div class="example-label">예시: 취소 확인 모달</div>
+        <div role="dialog" style="background:#fff;border:1px solid #ddd;padding:24px;border-radius:8px;max-width:300px;">
+          <h4 style="margin-bottom:12px;">정말 취소하시겠습니까?</h4>
+          <p style="color:#666;font-size:0.9rem;margin-bottom:20px;">취소하면 변경사항이 저장되지 않습니다.</p>
+          <button class="btn btn-primary">확인</button>
+          <button class="btn btn-secondary">취소</button>
+        </div>
+        <p class="small-text" style="margin-top:12px;">* "확인"은 무엇을 확인하는 걸까요? "취소"는 취소를 취소하는 걸까요?</p>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- Category: Sneaking -->
+    <div class="category-header">
+      <span>🕵️</span>
+      <div>
+        <h2 style="margin:0;font-size:1.1rem;">규정의 숨김 (Sneaking)</h2>
+        <p style="margin:0;font-size:0.8rem;opacity:0.7;">중요한 정보를 숨기거나 눈에 띄지 않게 배치</p>
+      </div>
+    </div>
+
+    <!-- Pattern 6: Hidden Cost -->
+    <div class="section">
+      <h2>
+        💰 숨겨진 비용
+        <span class="tag tag-high">높음</span>
+      </h2>
+      <p class="desc">배송비, 수수료 등 추가 비용이 명확하게 표시되지 않음</p>
+
+      <div class="example">
+        <div class="example-label">예시: 상품 가격 표시</div>
+        <div style="text-align:center;">
+          <p style="font-size:0.9rem;color:#666;">특가 상품</p>
+          <p class="price">₩29,900</p>
+          <p class="price-note">+ 배송비 별도</p>
+          <p class="tiny-text">부가세 별도, 설치비 추가 요금 발생</p>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="example-label">예시: 영문 가격 표시</div>
+        <div style="text-align:center;">
+          <p class="price">$99.00</p>
+          <p class="price-note">excluding tax and shipping</p>
+          <p class="tiny-text">Price before tax. Additional fees may apply.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pattern 7: Small Print -->
+    <div class="section">
+      <h2>
+        🔎 작은 글씨 약관
+        <span class="tag tag-medium">중간</span>
+      </h2>
+      <p class="desc">중요한 정보가 매우 작은 글씨로 숨겨져 있음</p>
+
+      <div class="example">
+        <div class="example-label">예시: 이벤트 안내</div>
+        <div style="text-align:center;padding:20px;background:linear-gradient(135deg,#f093fb,#f5576c);color:white;border-radius:12px;">
+          <h3 style="font-size:1.5rem;margin-bottom:8px;">100% 환불 보장!</h3>
+          <p>마음에 들지 않으면 전액 환불해 드립니다.</p>
+        </div>
+        <p style="font-size:9px;color:#bbb;margin-top:8px;">
+          * 환불 불가 조건: 개봉 후 7일 경과, 사용 흔적이 있는 경우, 포장 훼손 시.
+          환불 시 수수료 10% 차감. 반품 배송비 고객 부담.
+          일부 상품은 환불 대상에서 제외될 수 있습니다. 자세한 내용은 약관을 참조하세요.
+        </p>
+      </div>
+    </div>
+
+    <!-- Pattern 8: Auto Add Cart -->
+    <div class="section">
+      <h2>
+        🛒 자동 추가 옵션
+        <span class="tag tag-high">높음</span>
+      </h2>
+      <p class="desc">장바구니에 보험, 보증 등이 자동으로 추가됨</p>
+
+      <div class="example" id="cart">
+        <div class="example-label">예시: 장바구니</div>
+        <div class="cart-item">
+          <span>노트북 Pro 15"</span>
+          <span>₩1,890,000</span>
+        </div>
+        <div class="cart-item">
+          <label style="display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" checked>
+            <span>연장 보증 서비스 (2년)</span>
+          </label>
+          <span>₩199,000</span>
+        </div>
+        <div class="cart-item">
+          <label style="display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" checked>
+            <span>프리미엄 케어 보험</span>
+          </label>
+          <span>₩89,000</span>
+        </div>
+        <div class="cart-item" style="background:#f9f9f9;font-weight:600;">
+          <span>총 금액</span>
+          <span>₩2,178,000</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pattern 9: Free Trial Trap -->
+    <div class="section">
+      <h2>
+        ⏰ 무료체험 자동전환
+        <span class="tag tag-high">높음</span>
+      </h2>
+      <p class="desc">무료체험 후 자동으로 유료 구독으로 전환됨</p>
+
+      <div class="example">
+        <div class="example-label">예시: 무료 체험 가입</div>
+        <div class="trial-banner">
+          <h3>7일 무료 체험 시작하기</h3>
+          <p>모든 프리미엄 기능을 무료로 사용해 보세요!</p>
+          <button class="btn" style="background:white;color:#667eea;font-weight:600;margin-top:12px;">
+            무료로 시작하기
+          </button>
+          <p class="small" style="margin-top:12px;">
+            무료 체험 후 자동으로 월 ₩9,900 결제됩니다. 언제든 취소 가능.
+          </p>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="example-label">예시: 영문 무료 체험</div>
+        <div style="text-align:center;padding:20px;">
+          <h3>Start Your Free Trial</h3>
+          <p style="color:#666;margin:12px 0;">Try premium features for 14 days</p>
+          <button class="btn btn-primary btn-large">Start Free Trial</button>
+          <p class="small-text" style="margin-top:12px;">
+            You will be charged $12.99/month after trial ends unless you cancel.
+            Auto-renewal can be turned off anytime.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <footer style="text-align:center;padding:40px 20px;color:#999;">
+      <p>💡 LightOn 테스트 페이지</p>
+      <p style="font-size:0.8rem;margin-top:8px;">
+        이 페이지의 모든 예시는 다크패턴 탐지 테스트를 위한 것입니다.
+      </p>
+    </footer>
+  </div>
+
+  <!-- Modal for testing -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal" role="dialog" aria-modal="true">
+      <h3>정말 떠나시겠어요? 😢</h3>
+      <p>지금 나가시면 특별 할인 혜택을 받지 못하실 수 있어요.</p>
+      <div class="modal-buttons">
+        <button class="btn btn-primary btn-large">아니요, 더 둘러볼게요</button>
+        <button class="btn btn-secondary" onclick="closeModal()">네, 그래도 나갈게요</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Show modal after 5 seconds for testing
+    setTimeout(() => {
+      document.getElementById('modal').classList.add('active');
+    }, 5000);
+
+    function closeModal() {
+      document.getElementById('modal').classList.remove('active');
+    }
+
+    // Close modal on overlay click
+    document.getElementById('modal').addEventListener('click', (e) => {
+      if (e.target.id === 'modal') {
+        closeModal();
+      }
+    });
+  </script>
+</body>
+</html>

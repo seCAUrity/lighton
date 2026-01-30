@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LightOn</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup">
+    <!-- Header -->
+    <header class="popup__header">
+      <div class="popup__logo">
+        <span class="popup__logo-icon">💡</span>
+        <div class="popup__logo-text">
+          <h1 class="popup__title">LightOn</h1>
+          <p class="popup__subtitle" data-i18n="popupSubtitle">다크패턴 탐지기</p>
+        </div>
+      </div>
+      <label class="popup__toggle">
+        <input type="checkbox" id="enableToggle" checked>
+        <span class="popup__toggle-slider"></span>
+      </label>
+    </header>
+
+    <!-- Status -->
+    <section class="popup__status" id="statusSection">
+      <div class="popup__status-icon" id="statusIcon">✓</div>
+      <p class="popup__status-text" id="statusText">검사 중...</p>
+    </section>
+
+    <!-- Results -->
+    <section class="popup__results" id="resultsSection">
+      <h2 class="popup__results-title" data-i18n="detectedCount">탐지된 패턴</h2>
+
+      <div class="popup__counts">
+        <div class="popup__count popup__count--high" id="highCount" style="display: none;">
+          <span class="popup__count-number">0</span>
+          <span class="popup__count-label" data-i18n="severityHigh">높음</span>
+        </div>
+        <div class="popup__count popup__count--medium" id="mediumCount" style="display: none;">
+          <span class="popup__count-number">0</span>
+          <span class="popup__count-label" data-i18n="severityMedium">중간</span>
+        </div>
+        <div class="popup__count popup__count--low" id="lowCount" style="display: none;">
+          <span class="popup__count-number">0</span>
+          <span class="popup__count-label" data-i18n="severityLow">낮음</span>
+        </div>
+      </div>
+
+      <!-- Pattern List -->
+      <ul class="popup__list" id="patternList">
+        <!-- Patterns will be inserted here -->
+      </ul>
+    </section>
+
+    <!-- No Patterns -->
+    <section class="popup__empty" id="emptySection" style="display: none;">
+      <div class="popup__empty-icon">✨</div>
+      <p class="popup__empty-text" data-i18n="noPatterns">이 페이지에서 다크패턴이 발견되지 않았습니다.</p>
+    </section>
+
+    <!-- Disabled State -->
+    <section class="popup__disabled" id="disabledSection" style="display: none;">
+      <div class="popup__disabled-icon">🌙</div>
+      <p class="popup__disabled-text">LightOn이 비활성화되어 있습니다.</p>
+    </section>
+
+    <!-- Footer -->
+    <footer class="popup__footer">
+      <button class="popup__rescan" id="rescanBtn" title="다시 검사">
+        <span>🔄</span> 다시 검사
+      </button>
+      <span class="popup__version">v1.0.0</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

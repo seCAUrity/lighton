@@ -1,0 +1,150 @@
+{
+  "extensionName": {
+    "message": "LightOn - Dark Pattern Detector",
+    "description": "Extension name"
+  },
+  "extensionDescription": {
+    "message": "Detects and highlights dark patterns on websites to protect users.",
+    "description": "Extension description"
+  },
+  "popupTitle": {
+    "message": "LightOn",
+    "description": "Popup title"
+  },
+  "popupSubtitle": {
+    "message": "Dark Pattern Detector",
+    "description": "Popup subtitle"
+  },
+  "enabledLabel": {
+    "message": "Enabled",
+    "description": "Enabled toggle label"
+  },
+  "disabledLabel": {
+    "message": "Disabled",
+    "description": "Disabled toggle label"
+  },
+  "detectedCount": {
+    "message": "Detected Patterns",
+    "description": "Detected patterns label"
+  },
+  "noPatterns": {
+    "message": "No dark patterns detected on this page.",
+    "description": "No patterns detected message"
+  },
+  "severityLow": {
+    "message": "Low",
+    "description": "Low severity"
+  },
+  "severityMedium": {
+    "message": "Medium",
+    "description": "Medium severity"
+  },
+  "severityHigh": {
+    "message": "High",
+    "description": "High severity"
+  },
+  "categoryInterface": {
+    "message": "Interface Interference",
+    "description": "Interface interference category"
+  },
+  "categorySneaking": {
+    "message": "Sneaking",
+    "description": "Sneaking category"
+  },
+  "categoryObstruction": {
+    "message": "Obstruction",
+    "description": "Obstruction category"
+  },
+  "categoryNagging": {
+    "message": "Nagging",
+    "description": "Nagging category"
+  },
+  "categorySocial": {
+    "message": "Social Proof",
+    "description": "Social proof manipulation category"
+  },
+  "categoryForced": {
+    "message": "Forced Action",
+    "description": "Forced action category"
+  },
+  "patternEmotionalManipulation": {
+    "message": "Emotional Manipulation",
+    "description": "Emotional manipulation pattern name"
+  },
+  "patternEmotionalManipulationDesc": {
+    "message": "Uses emotional pressure to guide choices.",
+    "description": "Emotional manipulation pattern description"
+  },
+  "patternPreselectedCheckbox": {
+    "message": "Preselected Checkbox",
+    "description": "Preselected checkbox pattern name"
+  },
+  "patternPreselectedCheckboxDesc": {
+    "message": "Agreement/subscription checkbox is pre-checked.",
+    "description": "Preselected checkbox pattern description"
+  },
+  "patternHiddenCancel": {
+    "message": "Hidden Cancel Option",
+    "description": "Hidden cancel pattern name"
+  },
+  "patternHiddenCancelDesc": {
+    "message": "Cancel link is designed to be hard to find.",
+    "description": "Hidden cancel pattern description"
+  },
+  "patternAsymmetricButtons": {
+    "message": "Asymmetric Buttons",
+    "description": "Asymmetric buttons pattern name"
+  },
+  "patternAsymmetricButtonsDesc": {
+    "message": "Button size or color designed to favor certain choices.",
+    "description": "Asymmetric buttons pattern description"
+  },
+  "patternAmbiguousButton": {
+    "message": "Ambiguous Button",
+    "description": "Ambiguous button pattern name"
+  },
+  "patternAmbiguousButtonDesc": {
+    "message": "Button text is ambiguous and may cause confusion.",
+    "description": "Ambiguous button pattern description"
+  },
+  "patternHiddenCost": {
+    "message": "Hidden Cost",
+    "description": "Hidden cost pattern name"
+  },
+  "patternHiddenCostDesc": {
+    "message": "Additional costs are not clearly displayed.",
+    "description": "Hidden cost pattern description"
+  },
+  "patternSmallPrint": {
+    "message": "Small Print Terms",
+    "description": "Small print pattern name"
+  },
+  "patternSmallPrintDesc": {
+    "message": "Important information hidden in small print.",
+    "description": "Small print pattern description"
+  },
+  "patternAutoAddCart": {
+    "message": "Auto-Added Items",
+    "description": "Auto add to cart pattern name"
+  },
+  "patternAutoAddCartDesc": {
+    "message": "Additional items automatically added to cart.",
+    "description": "Auto add to cart pattern description"
+  },
+  "patternFreeTrialTrap": {
+    "message": "Free Trial Trap",
+    "description": "Free trial trap pattern name"
+  },
+  "patternFreeTrialTrapDesc": {
+    "message": "Automatically converts to paid subscription after free trial.",
+    "description": "Free trial trap pattern description"
+  },
+  "tooltipClickForMore": {
+    "message": "Click for more details",
+    "description": "Click for more details tooltip"
+  },
+  "poweredBy": {
+    "message": "Analyzed by LightOn",
+    "description": "Powered by LightOn footer"
+  }
+}

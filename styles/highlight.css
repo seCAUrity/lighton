@@ -1,0 +1,384 @@
+/**
+ * LightOn Highlighting Styles
+ *
+ * Theme: "Light On" - Illuminating dark patterns
+ */
+
+:root {
+  /* Primary - Light On theme */
+  --lighton-primary: #FFB800;
+  --lighton-primary-glow: #FFF4CC;
+  --lighton-primary-dark: #CC9200;
+
+  /* Severity Levels */
+  --lighton-low: #4ECDC4;
+  --lighton-low-bg: rgba(78, 205, 196, 0.15);
+  --lighton-medium: #FFB800;
+  --lighton-medium-bg: rgba(255, 184, 0, 0.15);
+  --lighton-high: #FF6B6B;
+  --lighton-high-bg: rgba(255, 107, 107, 0.15);
+
+  /* Background */
+  --lighton-dark: #1A1A2E;
+  --lighton-light: #FFFFFF;
+  --lighton-overlay: rgba(26, 26, 46, 0.95);
+
+  /* Text */
+  --lighton-text: #333333;
+  --lighton-text-light: #666666;
+  --lighton-text-inverse: #FFFFFF;
+
+  /* Animation */
+  --lighton-transition: 0.2s ease-in-out;
+}
+
+/* ===== Base Highlight Container ===== */
+.lighton-detected {
+  position: relative !important;
+}
+
+/* ===== Outline Style (Subtle) ===== */
+.lighton-outline {
+  outline-style: dashed !important;
+  outline-width: 1.5px !important;
+  outline-offset: 2px !important;
+  border-radius: 3px;
+  transition: outline-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.lighton-outline--low {
+  outline-color: var(--lighton-low) !important;
+}
+
+.lighton-outline--medium {
+  outline-color: var(--lighton-medium) !important;
+}
+
+.lighton-outline--high {
+  outline-color: var(--lighton-high) !important;
+}
+
+/* Hover state for outlines */
+.lighton-outline:hover {
+  outline-style: solid !important;
+  outline-width: 2px !important;
+}
+
+.lighton-outline--low:hover {
+  box-shadow: 0 0 8px var(--lighton-low-bg);
+}
+
+.lighton-outline--medium:hover {
+  box-shadow: 0 0 8px var(--lighton-medium-bg);
+}
+
+.lighton-outline--high:hover {
+  box-shadow: 0 0 10px var(--lighton-high-bg);
+}
+
+/* ===== Subtle Dot Indicator ===== */
+.lighton-dot {
+  position: absolute !important;
+  top: -4px !important;
+  right: -4px !important;
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  z-index: 2147483647 !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.9) !important;
+}
+
+.lighton-dot:hover {
+  transform: scale(1.4) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+.lighton-dot--low {
+  background: var(--lighton-low) !important;
+}
+
+.lighton-dot--medium {
+  background: var(--lighton-medium) !important;
+}
+
+.lighton-dot--high {
+  background: var(--lighton-high) !important;
+  animation: lighton-dot-pulse 2s infinite !important;
+}
+
+@keyframes lighton-dot-pulse {
+  0%, 100% {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(255, 107, 107, 0.4);
+  }
+  50% {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 4px rgba(255, 107, 107, 0);
+  }
+}
+
+/* Inline dot for text elements */
+.lighton-dot--inline {
+  position: relative !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  margin-left: 4px !important;
+  top: auto !important;
+  right: auto !important;
+}
+
+/* ===== Legacy Badge (kept for compatibility) ===== */
+.lighton-badge {
+  display: none !important;
+}
+
+/* ===== Tooltip Style ===== */
+.lighton-tooltip {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+  padding: 10px 14px !important;
+  background: var(--lighton-overlay) !important;
+  color: var(--lighton-text-inverse) !important;
+  border-radius: 8px !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+  max-width: 260px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition: opacity 0.15s ease,
+              visibility 0.15s ease,
+              transform 0.15s ease !important;
+  pointer-events: none !important;
+}
+
+.lighton-tooltip--visible {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) !important;
+}
+
+.lighton-tooltip__header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-bottom: 8px !important;
+  padding-bottom: 8px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.lighton-tooltip__icon {
+  font-size: 18px !important;
+}
+
+.lighton-tooltip__title {
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+
+.lighton-tooltip__severity {
+  display: inline-block !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  margin-left: auto !important;
+}
+
+.lighton-tooltip__severity--low {
+  background: var(--lighton-low) !important;
+  color: var(--lighton-dark) !important;
+}
+
+.lighton-tooltip__severity--medium {
+  background: var(--lighton-medium) !important;
+  color: var(--lighton-dark) !important;
+}
+
+.lighton-tooltip__severity--high {
+  background: var(--lighton-high) !important;
+  color: var(--lighton-text-inverse) !important;
+}
+
+.lighton-tooltip__description {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-size: 12px !important;
+}
+
+.lighton-tooltip__footer {
+  margin-top: 8px !important;
+  padding-top: 8px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  font-size: 10px !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  text-align: right !important;
+}
+
+/* ===== Arrow for Tooltip (hidden by default, positioned dynamically) ===== */
+.lighton-tooltip::before {
+  content: '' !important;
+  position: absolute !important;
+  width: 8px !important;
+  height: 8px !important;
+  background: var(--lighton-overlay) !important;
+  transform: rotate(45deg) !important;
+  display: none !important;
+}
+
+/* ===== Overlay for Detection Summary ===== */
+.lighton-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  z-index: 2147483646 !important;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s !important;
+}
+
+.lighton-overlay--visible {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* ===== Indicator (Minimal) ===== */
+.lighton-indicator {
+  position: fixed !important;
+  top: 10px !important;
+  right: 10px !important;
+  z-index: 2147483647 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 4px 8px !important;
+  background: var(--lighton-overlay) !important;
+  border-radius: 12px !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-size: 11px !important;
+  color: var(--lighton-text-inverse) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  user-select: none !important;
+}
+
+.lighton-indicator__dot {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+}
+
+.lighton-indicator__dot--low {
+  background: var(--lighton-low) !important;
+}
+
+.lighton-indicator__dot--medium {
+  background: var(--lighton-medium) !important;
+}
+
+.lighton-indicator__dot--high {
+  background: var(--lighton-high) !important;
+  animation: lighton-dot-pulse 2s infinite !important;
+}
+
+.lighton-indicator__total {
+  font-weight: 600 !important;
+  font-size: 11px !important;
+}
+
+/* ===== Animation Classes ===== */
+.lighton-fade-in {
+  animation: lighton-fade-in 0.3s ease-out forwards !important;
+}
+
+@keyframes lighton-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lighton-glow {
+  animation: lighton-glow 1.5s ease-in-out infinite !important;
+}
+
+@keyframes lighton-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--lighton-primary);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--lighton-primary), 0 0 30px var(--lighton-primary-glow);
+  }
+}
+
+/* ===== Focus/Scroll Animation ===== */
+.lighton-focus {
+  animation: lighton-focus-pulse 1.5s ease-out !important;
+}
+
+@keyframes lighton-focus-pulse {
+  0% {
+    outline: 4px solid var(--lighton-primary) !important;
+    outline-offset: 4px !important;
+    box-shadow: 0 0 0 8px rgba(255, 184, 0, 0.4), 0 0 30px rgba(255, 184, 0, 0.6) !important;
+  }
+  50% {
+    outline: 4px solid var(--lighton-primary) !important;
+    outline-offset: 6px !important;
+    box-shadow: 0 0 0 12px rgba(255, 184, 0, 0.2), 0 0 40px rgba(255, 184, 0, 0.4) !important;
+  }
+  100% {
+    outline: 3px solid var(--lighton-primary) !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 8px rgba(255, 184, 0, 0.15) !important;
+  }
+}
+
+/* Focus overlay dimming effect */
+.lighton-focus-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(0, 0, 0, 0.3) !important;
+  z-index: 2147483640 !important;
+  pointer-events: none !important;
+  animation: lighton-overlay-fade 1.5s ease-out forwards !important;
+}
+
+@keyframes lighton-overlay-fade {
+  0% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Focused element should be above the overlay */
+.lighton-focus {
+  position: relative !important;
+  z-index: 2147483645 !important;
+}
+
+/* ===== Disabled State ===== */
+.lighton-disabled .lighton-badge,
+.lighton-disabled .lighton-outline,
+.lighton-disabled .lighton-tooltip,
+.lighton-disabled .lighton-indicator {
+  display: none !important;
+}

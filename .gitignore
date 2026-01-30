@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Research & Notes (excluded from version control)
+note/
+*.note
+*.note.*
+
+# Reference projects (prior research)
+Dark-Pattern-Identifier/
+Pattern-Highlighter/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Build outputs
+dist/
+build/
+
+# Root level SVG duplicates
+/icon*.svg

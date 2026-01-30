@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <defs>
+    <linearGradient id="bulb16" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFB800"/>
+      <stop offset="100%" style="stop-color:#FF8C00"/>
+    </linearGradient>
+  </defs>
+  <circle cx="8" cy="6" r="5" fill="url(#bulb16)"/>
+  <rect x="6" y="10" width="4" height="2" rx="0.5" fill="#1A1A2E"/>
+  <rect x="6.5" y="12" width="3" height="1.5" rx="0.5" fill="#1A1A2E"/>
+  <circle cx="6" cy="5" r="1" fill="#FFF4CC" opacity="0.8"/>
+</svg>

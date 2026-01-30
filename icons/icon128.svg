@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bulb128" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFB800"/>
+      <stop offset="100%" style="stop-color:#FF8C00"/>
+    </linearGradient>
+  </defs>
+  <!-- Outer glow -->
+  <circle cx="64" cy="48" r="40" fill="#FFB800" opacity="0.15"/>
+  <!-- Main bulb -->
+  <circle cx="64" cy="48" r="34" fill="url(#bulb128)"/>
+  <!-- Highlight -->
+  <ellipse cx="52" cy="38" rx="8" ry="12" fill="#FFF4CC" opacity="0.5"/>
+  <!-- Rays -->
+  <g stroke="#FFB800" stroke-width="3" stroke-linecap="round" opacity="0.5">
+    <line x1="64" y1="6" x2="64" y2="12"/>
+    <line x1="98" y1="16" x2="94" y2="20"/>
+    <line x1="110" y1="48" x2="104" y2="48"/>
+    <line x1="98" y1="80" x2="94" y2="76"/>
+    <line x1="30" y1="16" x2="34" y2="20"/>
+    <line x1="18" y1="48" x2="24" y2="48"/>
+    <line x1="30" y1="80" x2="34" y2="76"/>
+  </g>
+  <!-- Base -->
+  <rect x="48" y="80" width="32" height="12" rx="2" fill="#1A1A2E"/>
+  <rect x="50" y="92" width="28" height="8" rx="2" fill="#1A1A2E"/>
+  <rect x="52" y="100" width="24" height="6" rx="2" fill="#1A1A2E"/>
+  <rect x="54" y="106" width="20" height="4" rx="2" fill="#1A1A2E"/>
+  <!-- Base stripes -->
+  <line x1="48" y1="85" x2="80" y2="85" stroke="#2D2D4A" stroke-width="2"/>
+  <line x1="48" y1="90" x2="80" y2="90" stroke="#2D2D4A" stroke-width="2"/>
+  <!-- Filament -->
+  <path d="M64 80 L64 62" stroke="#1A1A2E" stroke-width="3" stroke-linecap="round"/>
+  <path d="M57 70 L64 62 L71 70" stroke="#1A1A2E" stroke-width="3" stroke-linecap="round" fill="none"/>
+</svg>
